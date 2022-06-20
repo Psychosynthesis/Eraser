@@ -1,0 +1,18 @@
+{
+	"name": "UTM Eraser",
+	"version": "1.0",
+	"description": "Removes a lot of tracking query parameters in URLs, such as utm, fbclid, gclid, etc.",
+	"icons": {
+		"48": "icons/favicon.png"
+	},
+	"background": {
+		"scripts": ["queryParamsRemover.js"]
+	},
+	"permissions": [
+		"webRequest",
+		"webRequestBlocking",
+		"http://*/*",
+		"https://*/*"
+	],
+	"manifest_version": 2
+}
