@@ -1,5 +1,7 @@
 "use strict";
-import { apiInterface, readUTMeraserSettings } from './common/utils.js';
+import {
+	apiInterface, readUTMeraserSettings
+} from './common/utils.js';
 import { defaultSettings, SETTINGS_KEY } from './common/constants.js';
 
 let localReadedSettins = defaultSettings;
@@ -46,7 +48,7 @@ function stripTrackingQueryParams(request) {
 readUTMeraserSettings((readedSettings) => {
 	if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
 		console.log("Can't find the settings, setup new.");
-		browser.storage.sync.set({ [SETTINGS_KEY]: defaultSettings });
+		apiInterface.storage.sync.set({ [SETTINGS_KEY]: defaultSettings });
 	} else {
 		localReadedSettins = readedSettings;
 	}

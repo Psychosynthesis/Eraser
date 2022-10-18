@@ -1,5 +1,5 @@
 export const defaultSettings = {
-	status: false
+	status: true
 };
 
 export const EXTENSION_NAME = "UTM Eraser";

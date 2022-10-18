@@ -5,7 +5,8 @@ function storageChangeHandler(changes, area) {
 	if (Object.hasOwn(changes, SETTINGS_KEY)) {
 	  const { oldValue, newValue } = changes[SETTINGS_KEY];
 	  if (oldValue && (newValue.status !== oldValue.status)) {
-		  document.getElementById("eraserCustomRadioItem").className = oldValue.status ? "eraserCustomRadio" : "eraserCustomRadio checked";
+		  document.getElementById("eraserCustomRadioItem").className = oldValue.status ?
+		  	"eraserCustomRadio" : "eraserCustomRadio checked";
 	  }
 	}
 }
@@ -14,9 +15,9 @@ function toggleUTMeraserSettings() {
 	readUTMeraserSettings((readedSettings) => {
 		if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
 			console.log("Can't find the settings, setup new.");
-			browser.storage.sync.set({ [SETTINGS_KEY]: defaultSettings });
+			apiInterface.storage.sync.set({ [SETTINGS_KEY]: defaultSettings });
 		} else {
-			browser.storage.sync.set({
+			apiInterface.storage.sync.set({
 				[SETTINGS_KEY]: {
 					...readedSettings[SETTINGS_KEY],
 					status: !readedSettings[SETTINGS_KEY].status,
@@ -29,11 +30,10 @@ function toggleUTMeraserSettings() {
 function onLoad(readedSettings){
 	if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
 		console.log("Can't find the settings, setup new.");
-		browser.storage.sync.set({ [SETTINGS_KEY]: defaultSettings });
+		apiInterface.storage.sync.set({ [SETTINGS_KEY]: defaultSettings });
 	} else {
-		if (readedSettings[SETTINGS_KEY].status) {
-			document.getElementById("eraserCustomRadioItem").className = "eraserCustomRadio checked";
-		}
+		document.getElementById("eraserCustomRadioItem").className = readedSettings[SETTINGS_KEY].status ?
+			"eraserCustomRadio checked" : "eraserCustomRadio";
 	}
 };
 
