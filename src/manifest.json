@@ -1,19 +1,32 @@
 {
 	"name": "UTM Eraser",
-	"version": "1.0",
+	"version": "1.1",
 	"description": "Removes a lot of tracking query parameters in URLs, such as utm, fbclid, gclid, etc.",
 	"homepage_url": "https://github.com/Psychosynthesis/Eraser",
 	"icons": {
 		"48": "icons/favicon.png"
 	},
 	"background": {
-		"scripts": ["queryParamsRemover.js"]
+		"page": "background.html"
+	},
+	"browser_action": {
+		"browser_style": true,
+		"default_icon": "icons/panelicon.png",
+		"default_title": "Eraser",
+		"default_popup": "panel/panelMenu.html"
 	},
 	"permissions": [
+		"activeTab",
+		"storage",
 		"webRequest",
 		"webRequestBlocking",
 		"http://*/*",
 		"https://*/*"
 	],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{37d5c7e4-5054-4881-a5a7-0ce6e45efa0b}"
+		}
+	},
 	"manifest_version": 2
 }

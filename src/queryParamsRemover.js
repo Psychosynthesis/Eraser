@@ -1,10 +1,10 @@
-/**
-*  UTM Eraser remove a lot of tracking query params
-*/
-
 "use strict";
+import { apiInterface, readUTMeraserSettings } from './common/utils.js';
+import { defaultSettings, SETTINGS_KEY } from './common/constants.js';
 
-const queryParamsForRemove = [
+let localReadedSettins = defaultSettings;
+
+const queryParamsForRemove = [ // TODO: make configurable
 	"utm_campaign",
 	"utm_content",
 	"utm_id",
@@ -16,7 +16,18 @@ const queryParamsForRemove = [
 	"gclid",
 ];
 
+function settingsUpdater(changes, area) {
+	if (Object.hasOwn(changes, SETTINGS_KEY)) {
+		localReadedSettins =  changes[SETTINGS_KEY].newValue;
+	}
+}
+
 function stripTrackingQueryParams(request) {
+	const dontProcessUrlComm = { cancel: false };
+	if (!localReadedSettins.status) {
+		return dontProcessUrlComm;
+	}
+
 	let requestedUrl = new URL(request.url);
 	let match = false;
 
@@ -28,18 +39,25 @@ function stripTrackingQueryParams(request) {
 	});
 
 	// Return the stripped URL if a match is found. Otherwise, pass the URL on as normal {cancel: false}
-	return match ? { redirectUrl: requestedUrl.href } : { cancel: false };
+	return match ? { redirectUrl: requestedUrl.href } : dontProcessUrlComm;
 }
+
+// Get settings on script load
+readUTMeraserSettings((readedSettings) => {
+	if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
+		console.log("Can't find the settings, setup new.");
+		browser.storage.sync.set({ [SETTINGS_KEY]: defaultSettings });
+	} else {
+		localReadedSettins = readedSettings;
+	}
+});
 
 /**
 *  Event listener for onBeforeRequest (HTTP Requests)
-*
 *  Info for the RequestFilter: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/RequestFilter
 *  Info on Types: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/ResourceType
 *
 */
-const apiInterface = (typeof(browser) !== "undefined") ? browser : chrome;
-
 apiInterface.webRequest.onBeforeRequest.addListener(
 	stripTrackingQueryParams,
 	{
@@ -49,3 +67,5 @@ apiInterface.webRequest.onBeforeRequest.addListener(
 	},
 	["blocking"]
 );
+
+apiInterface.storage.onChanged.addListener(settingsUpdater);

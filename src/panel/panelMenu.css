@@ -1,0 +1,52 @@
+body {
+	margin: 20px;
+	background: #555;
+	color: #eee;
+}
+
+h3 {
+	margin: 0;
+}
+
+.eraserCustomRadio-container {
+	margin: 20px auto 10px;
+}
+
+.eraserCustomRadio-container, .eraserCustomRadio-container div { display: inline-block; }
+
+.eraserCustomRadio { margin-left: 5px; font-size: 95%; }
+
+.eraserCustomRadio .eraserCustomRadio-state-marker {
+	width: 40px;
+	height: 20px;
+	position: relative;
+	top: 2px;
+	line-height: 20px;
+	margin: 0 10px;
+	border-radius: 10px; cursor: pointer;
+	background-color: #c8c8c8;
+}
+
+.eraserCustomRadio .eraserCustomRadio-punkt {
+	width: 20px;
+	height: 20px;
+	position: relative;
+	left: 0;
+	border-radius: 10px;
+	box-sizing: border-box;
+}
+
+.eraserCustomRadio.checked .eraserCustomRadio-punkt { left: 50%; }
+.eraserCustomRadio.checked .eraserCustomRadio-state-marker { background-color: #139ecc; }
+
+.eraserCustomRadio .eraserCustomRadio-punkt {
+	-webkit-transition: left 0.1s;
+    -moz-transition: left 0.1s;
+    -o-transition: left 0.1s;
+    -ms-transition: left 0.1s;
+    transition: left 0.1s;
+	background-color: #fff;
+	border:1px solid #000;
+}
+
+.no-select { -ms-user-select: none; -moz-user-select: none; -webkit-user-select: none; }

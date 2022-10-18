@@ -14,10 +14,22 @@ For now, the full list of query params that get stripped out of URLs are:
 
 ---
 
-### Firefox installation
-Available on addons.mozilla.org
+### Debugging
+For debugging, you need to install extensions directly from the file.
 
-https://addons.mozilla.org/ru/firefox/addon/utm-eraser/
+To do this, type in the address bar: `about:debugging#/runtime/this-firefox`
+
+Sometimes it is necessary to install an unsigned update from a compiled file. For this go to `about:config` тype in search `xpinstall.signatures.required` and set to `false`.
+
+In the current session, you will be able to install unsigned extensions until you restart firefox.
+
+For build extensions run `bash build.sh` from the main directory of this repository.
+
+---
+
+### Firefox installation
+Available on addons.mozilla.org: https://addons.mozilla.org/ru/firefox/addon/utm-eraser/
+
 ---
 
 ### Chrome / Chromium installation
