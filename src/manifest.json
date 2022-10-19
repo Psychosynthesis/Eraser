@@ -6,7 +6,7 @@
 	"icons": {
 		"48": "icons/favicon.png",
 		"96": "icons/faviconMiddle.png",
-		"128": "icons/faviconBig.png",
+		"128": "icons/faviconBig.png"
 	},
 	"background": {
 		"page": "background.html"
