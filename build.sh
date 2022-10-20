@@ -1,2 +1,2 @@
 #!/bin/bash
-cd ./src && zip -r ../build/src.xpi *
+cd ./src/firefox && zip -r ../build/src.xpi *

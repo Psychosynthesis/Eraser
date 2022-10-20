@@ -1,0 +1,70 @@
+body, html {
+	margin: 0;
+	background: transparent;
+}
+
+.mainContainer {
+	background: #555;
+	color: #eee;
+	padding: 10px;
+	min-width: 120px;
+	max-width: 200px;
+	margin: 0 auto;
+	text-align: center;
+	border: 1px solid #444;
+}
+
+.mainHeader {
+	margin: 0;
+	font-weight: bold;
+	font-size: 115%;
+	text-align: center;
+}
+
+.eraserCustomRadio-container {
+	margin: 20px auto;
+	text-align: center;
+}
+
+.eraserCustomRadio-container, .eraserCustomRadio-container div { display: inline-block; }
+
+.eraserCustomRadio {
+	margin-left: 5px;
+	font-size: 95%;
+	position: relative;
+}
+
+.eraserCustomRadio .eraserCustomRadio-state-marker {
+	width: 40px;
+	height: 20px;
+	position: relative;
+	top: 2px;
+	line-height: 20px;
+	margin: 0 10px;
+	border-radius: 10px; cursor: pointer;
+	background-color: #c8c8c8;
+}
+
+.eraserCustomRadio .eraserCustomRadio-punkt {
+	width: 20px;
+	height: 20px;
+	position: absolute;
+	left: 0;
+	border-radius: 10px;
+	box-sizing: border-box;
+}
+
+.eraserCustomRadio.checked .eraserCustomRadio-punkt { left: 20px; }
+.eraserCustomRadio.checked .eraserCustomRadio-state-marker { background-color: #139ecc; }
+
+.eraserCustomRadio .eraserCustomRadio-punkt {
+	-webkit-transition: left 0.1s;
+    -moz-transition: left 0.1s;
+    -o-transition: left 0.1s;
+    -ms-transition: left 0.1s;
+    transition: left 0.1s;
+	background-color: #fff;
+	border:1px solid #000;
+}
+
+.no-select { -ms-user-select: none; -moz-user-select: none; -webkit-user-select: none; }

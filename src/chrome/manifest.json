@@ -26,10 +26,5 @@
 		"http://*/*",
 		"https://*/*"
 	],
-	"browser_specific_settings": {
-		"gecko": {
-			"id": "{37d5c7e4-5054-4881-a5a7-0ce6e45efa0b}"
-		}
-	},
 	"manifest_version": 3
 }
