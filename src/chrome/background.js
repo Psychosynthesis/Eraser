@@ -1,6 +1,6 @@
 "use strict";
 import { readUTMeraserSettings, setDefaultSettings } from './common/utils.js';
-import { defaultSettings, SETTINGS_KEY } from './common/constants.js';
+import { defaultSettings, SETTINGS_KEY, CANT_FIND_SETTINGS_MSG } from './common/constants.js';
 
 function localSettingsUpdater(changes, area) {
 	if (Object.hasOwn(changes, SETTINGS_KEY)) {
@@ -20,7 +20,7 @@ chrome.storage.onChanged.addListener(localSettingsUpdater);
 // Get settings on script load
 readUTMeraserSettings((readedSettings) => {
 	if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
-		console.log("Can't find the settings, setup new.");
+		console.log(CANT_FIND_SETTINGS_MSG);
 		setDefaultSettings();
 	} else {
 		localReadedSettins = { ...readedSettings };

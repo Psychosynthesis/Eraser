@@ -1,5 +1,5 @@
 import { readUTMeraserSettings, setDefaultSettings } from '../common/utils.js';
-import { SETTINGS_KEY } from '../common/constants.js';
+import { SETTINGS_KEY, CANT_FIND_SETTINGS_MSG } from '../common/constants.js';
 
 function storageChangeHandler(changes, area) {
 	if (Object.hasOwn(changes, SETTINGS_KEY)) {
@@ -14,7 +14,7 @@ function storageChangeHandler(changes, area) {
 function toggleUTMeraserSettings() {
 	readUTMeraserSettings((readedSettings) => {
 		if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
-			console.log("Can't find the settings, setup new.");
+			console.log(CANT_FIND_SETTINGS_MSG);
 			setDefaultSettings();
 		} else {
 			browser.storage.sync.set({
@@ -29,7 +29,7 @@ function toggleUTMeraserSettings() {
 
 function onLoad(readedSettings){
 	if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
-		console.log("Can't find the settings, setup new.");
+		console.log(CANT_FIND_SETTINGS_MSG);
 		setDefaultSettings();
 	} else {
 		document.getElementById("eraserCustomRadioItem").className = readedSettings[SETTINGS_KEY].status ?
