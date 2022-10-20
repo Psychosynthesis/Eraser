@@ -1,10 +1,12 @@
 "use strict";
-import {
-	apiInterface, readUTMeraserSettings
-} from './common/utils.js';
+import { readUTMeraserSettings, setDefaultSettings } from './common/utils.js';
 import { defaultSettings, SETTINGS_KEY } from './common/constants.js';
 
-let localReadedSettins = defaultSettings;
+browser.runtime.onInstalled.addListener(() => { // Store settings once on install
+	setDefaultSettings();
+});
+
+let localReadedSettins = { ...defaultSettings };
 
 const queryParamsForRemove = [ // TODO: make configurable
 	"utm_campaign",
@@ -18,7 +20,7 @@ const queryParamsForRemove = [ // TODO: make configurable
 	"gclid",
 ];
 
-function settingsUpdater(changes, area) {
+function localSettingsUpdater(changes, area) {
 	if (Object.hasOwn(changes, SETTINGS_KEY)) {
 		localReadedSettins =  changes[SETTINGS_KEY].newValue;
 	}
@@ -48,9 +50,9 @@ function stripTrackingQueryParams(request) {
 readUTMeraserSettings((readedSettings) => {
 	if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
 		console.log("Can't find the settings, setup new.");
-		apiInterface.storage.sync.set({ [SETTINGS_KEY]: defaultSettings });
+		setDefaultSettings();
 	} else {
-		localReadedSettins = readedSettings;
+		localReadedSettins = { ...readedSettings };
 	}
 });
 
@@ -60,7 +62,7 @@ readUTMeraserSettings((readedSettings) => {
 *  Info on Types: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/ResourceType
 *
 */
-apiInterface.webRequest.onBeforeRequest.addListener(
+browser.webRequest.onBeforeRequest.addListener(
 	stripTrackingQueryParams,
 	{
 		// Filters: Match all HTTP and HTTPS URLs.
@@ -70,4 +72,4 @@ apiInterface.webRequest.onBeforeRequest.addListener(
 	["blocking"]
 );
 
-apiInterface.storage.onChanged.addListener(settingsUpdater);
+browser.storage.onChanged.addListener(localSettingsUpdater);

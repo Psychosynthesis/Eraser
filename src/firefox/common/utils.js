@@ -1,16 +1,12 @@
-import { defaultSettings, SETTINGS_KEY } from './constants.js';
-
-export const isNotChrome = (typeof(browser) !== "undefined");
-
-export const apiInterface = isNotChrome ? browser : chrome;
+import { SETTINGS_KEY, defaultSettings } from './constants.js';
 
 export const readUTMeraserSettings = (callback) => {
-	if (isNotChrome) {
-		apiInterface.storage.sync.get(SETTINGS_KEY).then(
-			callback,
-			function(e) { console.error(e) }
-		);
-	} else {
-		apiInterface.storage.sync.get(callback);
-	}
+	browser.storage.sync.get(SETTINGS_KEY).then(
+		callback,
+		function(e) { console.error("Fail get settings: ", e); }
+	);
 };
+
+export const setDefaultSettings = () => {
+	browser.storage.sync.set({ [SETTINGS_KEY]: { ...defaultSettings} });
+}
