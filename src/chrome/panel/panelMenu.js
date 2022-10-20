@@ -1,4 +1,4 @@
-import { apiInterface, readUTMeraserSettings } from '../common/utils.js';
+import { readUTMeraserSettings, setDefaultSettings } from '../common/utils.js';
 import { defaultSettings, SETTINGS_KEY } from '../common/constants.js';
 
 function storageChangeHandler(changes, area) {
@@ -15,9 +15,9 @@ function toggleUTMeraserSettings() {
 	readUTMeraserSettings((readedSettings) => {
 		if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
 			console.log("Can't find the settings, setup new.");
-			apiInterface.storage.sync.set({ [SETTINGS_KEY]: defaultSettings });
+			setDefaultSettings();
 		} else {
-			apiInterface.storage.sync.set({
+			chrome.storage.sync.set({
 				[SETTINGS_KEY]: {
 					...readedSettings[SETTINGS_KEY],
 					status: !readedSettings[SETTINGS_KEY].status,
@@ -30,7 +30,7 @@ function toggleUTMeraserSettings() {
 function onLoad(readedSettings){
 	if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
 		console.log("Can't find the settings, setup new.");
-		apiInterface.storage.sync.set({ [SETTINGS_KEY]: defaultSettings });
+		setDefaultSettings();
 	} else {
 		document.getElementById("eraserCustomRadioItem").className = readedSettings[SETTINGS_KEY].status ?
 			"eraserCustomRadio checked" : "eraserCustomRadio";
@@ -41,4 +41,4 @@ function onLoad(readedSettings){
 document.getElementById("eraserCustomRadioItem").addEventListener("click", toggleUTMeraserSettings);
  // Читаем настройки
 readUTMeraserSettings(onLoad);
-apiInterface.storage.onChanged.addListener(storageChangeHandler);
+chrome.storage.onChanged.addListener(storageChangeHandler);

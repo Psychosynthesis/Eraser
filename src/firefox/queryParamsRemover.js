@@ -6,6 +6,7 @@ browser.runtime.onInstalled.addListener(() => { // Store settings once on instal
 	setDefaultSettings();
 });
 
+// Local settings are used to not make an asynchronous request to the store
 let localReadedSettins = { ...defaultSettings };
 
 const queryParamsForRemove = [ // TODO: make configurable
@@ -56,12 +57,9 @@ readUTMeraserSettings((readedSettings) => {
 	}
 });
 
-/**
-*  Event listener for onBeforeRequest (HTTP Requests)
-*  Info for the RequestFilter: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/RequestFilter
-*  Info on Types: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/ResourceType
-*
-*/
+// Event listener for onBeforeRequest (HTTP Requests)
+// Info for the RequestFilter: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/RequestFilter
+// Info on Types: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/ResourceType
 browser.webRequest.onBeforeRequest.addListener(
 	stripTrackingQueryParams,
 	{
@@ -71,5 +69,11 @@ browser.webRequest.onBeforeRequest.addListener(
 	},
 	["blocking"]
 );
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// Использование "webRequestBlocking", не совместимо с манифестом v.3, потому что
+// м****и из хрома решили брать деньги за эту функциональность - она доступна только для
+// "корпоративных" дополнений. А загружать расширения с манифестом старой версии в
+// гуглостор бесплатно нельзя. Поэтому данный подход работает только в Firefox.
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 browser.storage.onChanged.addListener(localSettingsUpdater);
