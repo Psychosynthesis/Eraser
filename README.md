@@ -28,11 +28,13 @@ For build extensions run `bash build.sh` from the main directory of this reposit
 ---
 
 ### Firefox installation
-Available on addons.mozilla.org: https://addons.mozilla.org/ru/firefox/addon/utm-eraser/
+Available on addons.mozilla.org: https://addons.mozilla.org/ru/firefox/addon/utm-eraser/  
 
 ---
 
 ### Chrome / Chromium installation
+Available on Chrome Store: https://chrome.google.com/webstore/detail/utm-eraser/cepijkcnhhbjgiofhdhbomcgdmfjbbhb  
+
 For debug extension on Chrome do next steps:  
  1. Menu -> "More Tools" -> Extensions menu
  2. Toggle Developer mode on
