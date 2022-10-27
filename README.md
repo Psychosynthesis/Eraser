@@ -11,6 +11,7 @@ For now, the full list of query params that get stripped out of URLs are:
  - "utm_name"
  - "fbclid"
  - "gclid"
+ - "ysclid"
 
 ---
 
