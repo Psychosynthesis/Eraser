@@ -8,6 +8,7 @@ const queryParamsForRemove = [ // TODO: make configurable
 	"utm_name",
 	"fbclid",
 	"gclid",
+	"ysclid",
 ];
 
 function stripTrackingQueryParams() {

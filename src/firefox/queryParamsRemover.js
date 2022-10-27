@@ -1,6 +1,11 @@
 "use strict";
 import { readUTMeraserSettings, setDefaultSettings } from './common/utils.js';
-import { defaultSettings, SETTINGS_KEY, CANT_FIND_SETTINGS_MSG } from './common/constants.js';
+import {
+	defaultSettings,
+	SETTINGS_KEY,
+	CANT_FIND_SETTINGS_MSG,
+	DEFAULT_PARAMS_TO_REMOVE,
+} from './common/constants.js';
 
 browser.runtime.onInstalled.addListener(() => { // Store settings once on install
 	setDefaultSettings();
@@ -8,18 +13,6 @@ browser.runtime.onInstalled.addListener(() => { // Store settings once on instal
 
 // Local settings are used to not make an asynchronous request to the store
 let localReadedSettins = { ...defaultSettings };
-
-const queryParamsForRemove = [ // TODO: make configurable
-	"utm_campaign",
-	"utm_content",
-	"utm_id",
-	"utm_source",
-	"utm_medium",
-	"utm_term",
-	"utm_name",
-	"fbclid",
-	"gclid",
-];
 
 function localSettingsUpdater(changes, area) {
 	if (Object.hasOwn(changes, SETTINGS_KEY)) {
@@ -36,7 +29,7 @@ function stripTrackingQueryParams(request) {
 	let requestedUrl = new URL(request.url);
 	let match = false;
 
-	queryParamsForRemove.forEach(name => {
+	DEFAULT_PARAMS_TO_REMOVE.forEach(name => {
 		if (requestedUrl.searchParams.has(name)) {
 			requestedUrl.searchParams.delete(name);
 			match = true;
