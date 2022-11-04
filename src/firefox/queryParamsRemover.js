@@ -7,10 +7,6 @@ import {
 	DEFAULT_PARAMS_TO_REMOVE,
 } from './common/constants.js';
 
-browser.runtime.onInstalled.addListener(() => { // Store settings once on install
-	setDefaultSettings();
-});
-
 // Local settings are used to not make an asynchronous request to the store
 let localReadedSettins = { ...defaultSettings };
 
@@ -18,7 +14,7 @@ function localSettingsUpdater(changes, area) {
 	if (Object.hasOwn(changes, SETTINGS_KEY)) {
 		localReadedSettins =  changes[SETTINGS_KEY].newValue;
 	}
-}
+};
 
 function stripTrackingQueryParams(request) {
 	const dontProcessUrlComm = { cancel: false };
@@ -38,17 +34,26 @@ function stripTrackingQueryParams(request) {
 
 	// Return the stripped URL if a match is found. Otherwise, pass the URL on as normal {cancel: false}
 	return match ? { redirectUrl: requestedUrl.href } : dontProcessUrlComm;
-}
+};
 
-// Get settings on script load
-readUTMeraserSettings((readedSettings) => {
-	if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
+function checkForSavedSettings(settings) {
+	if (!Object.hasOwn(settings, SETTINGS_KEY)) {
 		console.log(CANT_FIND_SETTINGS_MSG);
 		setDefaultSettings();
 	} else {
-		localReadedSettins = { ...readedSettings };
+		localReadedSettins = { ...settings };
 	}
+};
+
+browser.runtime.onInstalled.addListener(() => { // Store settings once on install
+	setDefaultSettings();
 });
+
+// Повторная проверка настроек при запуске профиля, который установил расширение
+browser.runtime.onStartup.addListener(readUTMeraserSettings(checkForSavedSettings));
+
+// Get settings on script load
+readUTMeraserSettings(checkForSavedSettings);
 
 // Event listener for onBeforeRequest (HTTP Requests)
 // Info for the RequestFilter: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/RequestFilter
