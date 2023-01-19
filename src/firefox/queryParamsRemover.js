@@ -18,9 +18,8 @@ function localSettingsUpdater(changes, area) {
 
 function stripTrackingQueryParams(request) {
 	const dontProcessUrlComm = { cancel: false };
-	if (!localReadedSettins.status) {
-		return dontProcessUrlComm;
-	}
+
+	if (!localReadedSettins.status) { return dontProcessUrlComm; }
 
 	let requestedUrl = new URL(request.url);
 	let match = false;
@@ -41,7 +40,7 @@ function checkForSavedSettings(settings) {
 		console.log(CANT_FIND_SETTINGS_MSG);
 		setDefaultSettings();
 	} else {
-		localReadedSettins = { ...settings };
+		localReadedSettins = { ...settings[SETTINGS_KEY] };
 	}
 };
 
