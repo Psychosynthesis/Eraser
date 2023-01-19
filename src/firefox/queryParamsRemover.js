@@ -50,7 +50,7 @@ browser.runtime.onInstalled.addListener(() => { // Store settings once on instal
 });
 
 // Повторная проверка настроек при запуске профиля, который установил расширение
-browser.runtime.onStartup.addListener(readUTMeraserSettings(checkForSavedSettings));
+browser.runtime.onStartup.addListener(() => { readUTMeraserSettings(checkForSavedSettings); });
 
 // Get settings on script load
 readUTMeraserSettings(checkForSavedSettings);
