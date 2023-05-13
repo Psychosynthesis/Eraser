@@ -3,6 +3,7 @@ const queryParamsForRemove = [ // TODO: make configurable
 	"utm_content",
 	"utm_id",
 	"utm_source",
+	"utm_referrer",
 	"utm_medium",
 	"utm_term",
 	"utm_name",

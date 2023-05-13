@@ -6,6 +6,7 @@ For now, the full list of query params that get stripped out of URLs are:
  - "utm_content"
  - "utm_id"
  - "utm_source"
+ - "utm_referrer"
  - "utm_medium"
  - "utm_term"
  - "utm_name"
