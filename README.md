@@ -1,7 +1,15 @@
-## Tracking URL Params Remover
+<h1>
+    <p align="center">Tracking URL Params Remover</p>
+</h1>
+
+![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FPsychosynthesis%2FEraser%2Fmain%2Fsrc%2Ffirefox%2Fmanifest.json&query=%24.version&style=flat&logo=firefox&label=Firefox%20Addon)  &nbsp; &nbsp; ![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FPsychosynthesis%2FEraser%2Fmain%2Fsrc%2Fchrome%2Fmanifest.json&query=%24.version&style=flat&logo=Google%20Chrome&logoColor=%2321ff21&label=Chrome%20Addon&color=%234d94d5) &nbsp; &nbsp;
+[<img src="https://raw.githubusercontent.com/Psychosynthesis/Donation/main/images/Donate.png" alt="Donation page">](https://github.com/Psychosynthesis/Donation)
+
+### About
 This is browser extension for removing a lot of tracking query params from URLs before they load.
 
 For now, the full list of query params that get stripped out of URLs are:
+ - "itm_source"
  - "utm_campaign"
  - "utm_content"
  - "utm_id"
@@ -13,6 +21,7 @@ For now, the full list of query params that get stripped out of URLs are:
  - "fbclid"
  - "gclid"
  - "ysclid"
+ - "_hsmi"
 
 ---
 
