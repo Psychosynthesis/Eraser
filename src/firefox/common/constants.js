@@ -9,6 +9,7 @@ export const SETTINGS_KEY = "UTMeraserSettings";
 export const CANT_FIND_SETTINGS_MSG = "Can't find the UTMeraser settings. Setup new.";
 
 export const DEFAULT_PARAMS_TO_REMOVE = [ // TODO: make configurable
+	"itm_source",
 	"utm_campaign",
 	"utm_content",
 	"utm_id",
@@ -20,4 +21,5 @@ export const DEFAULT_PARAMS_TO_REMOVE = [ // TODO: make configurable
 	"fbclid",
 	"gclid",
 	"ysclid",
+	"_hsmi"
 ];

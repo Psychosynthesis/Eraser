@@ -1,4 +1,5 @@
 const queryParamsForRemove = [ // TODO: make configurable
+	"itm_source",
 	"utm_campaign",
 	"utm_content",
 	"utm_id",
@@ -10,6 +11,7 @@ const queryParamsForRemove = [ // TODO: make configurable
 	"fbclid",
 	"gclid",
 	"ysclid",
+	"_hsmi"
 ];
 
 function stripTrackingQueryParams() {
