@@ -1,39 +1,24 @@
-const queryParamsForRemove = [ // TODO: make configurable
-	"itm_source",
-	"utm_campaign",
-	"utm_content",
-	"utm_id",
-	"utm_source",
-	"utm_referrer",
-	"utm_medium",
-	"utm_term",
-	"utm_name",
-	"fbclid",
-	"gclid",
-	"ysclid",
-	"_hsmi"
-];
+async function stripTrackingQueryParams() {
+  try {
+    const response = await chrome.runtime.sendMessage({ action: 'get-settings' });
+		if (!response || !response.status) { return; }
+		const queryParamsForRemove = response.paramsToRemove || [];
+		let requestedUrl = new URL(window.location.href);
+		let match = false;
 
-function stripTrackingQueryParams() {
-	chrome.runtime.sendMessage('get-settings', (response) => { // Получение настроек расширения из service_worker'а
-	  if (!response.status) {
-		  return;
-	  }
+		queryParamsForRemove.forEach(name => {
+			if (requestedUrl.searchParams.has(name)) {
+				requestedUrl.searchParams.delete(name);
+				match = true;
+			}
+		});
 
-	  let requestedUrl = new URL(window.location.href);
-	  let match = false;
-
-	  queryParamsForRemove.forEach(name => {
-		  if (requestedUrl.searchParams.has(name)) {
-			  requestedUrl.searchParams.delete(name);
-			  match = true;
-		  }
-	  });
-
-	  if (match) {
-		  history.replaceState(history.state, '', requestedUrl.href);
-	  }
-	});
+		if (match) {
+			history.replaceState(history.state, '', requestedUrl.href);
+		}
+  } catch (error) {
+		console.error('Ошибка при получении настроек расширения:', error);
+  }
 }
 
 stripTrackingQueryParams();

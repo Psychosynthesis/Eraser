@@ -7,7 +7,7 @@ body, html {
 	background: #555;
 	color: #eee;
 	padding: 10px;
-	min-width: 120px;
+	min-width: 160px;
 	max-width: 200px;
 	margin: 0 auto;
 	text-align: center;
@@ -72,3 +72,16 @@ body, html {
 }
 
 .no-select { -ms-user-select: none; -moz-user-select: none; -webkit-user-select: none; }
+
+#eraserParamsToRemoveList { width: 100%; min-height: 100px; margin: 0; padding: 0px; resize: vertical; background: #222; color: #fff; font-size: 90%; }
+
+#eraserSaveParamsBtn {
+  display: block;
+  width: 100%;
+	padding: 5px;
+	border-radius: 5px;
+	background: #139ecc;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
