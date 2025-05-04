@@ -11,10 +11,42 @@ function localSettingsUpdater(changes, area) {
 	}
 };
 
- // Store settings once on install
-chrome.runtime.onInstalled.addListener(async () => {
-    await resetSettings();
-    localReadedSettings = { ...defaultSettings };
+// Store settings only on first install, sync on update
+chrome.runtime.onInstalled.addListener(async (details) => {
+    if (details.reason === 'install') {
+        // Check if settings already exist in storage
+        readUTMeraserSettings(async (existingSettings) => {
+            if (!Object.hasOwn(existingSettings, 'status')) {
+                // No existing settings found - set defaults
+                await resetSettings();
+                localReadedSettings = { ...defaultSettings };
+                console.log('Initial settings created');
+            } else {
+                // Use existing settings
+                localReadedSettings = { ...existingSettings };
+                // Ensure ruleset state matches existing settings
+                if (existingSettings.status) {
+                    enableRuleset();
+                } else {
+                    disableRuleset();
+                }
+                console.log('Using existing settings');
+            }
+        });
+    } else {
+        // Update, reload, etc - sync with existing settings
+        readUTMeraserSettings((existingSettings) => {
+            if (Object.hasOwn(existingSettings, 'status')) {
+                localReadedSettings = { ...existingSettings };
+                // Ensure ruleset state matches settings
+                if (existingSettings.status) {
+                    enableRuleset();
+                } else {
+                    disableRuleset();
+                }
+            }
+        });
+    }
 });
 
 chrome.storage.onChanged.addListener(localSettingsUpdater);
@@ -29,6 +61,35 @@ readUTMeraserSettings((readedSettings) => {
 		localReadedSettings = { ...readedSettings };
 	}
 });
+
+// Enable/disable ruleset functions
+async function enableRuleset() {
+  try {
+    await chrome.declarativeNetRequest.updateEnabledRulesets({
+      enableRulesetIds: ["ruleset_1"],
+      disableRulesetIds: []
+    });
+    console.log('Ruleset 1 enabled');
+    return true;
+  } catch (error) {
+    console.error('Error enabling ruleset:', error);
+    return false;
+  }
+}
+
+async function disableRuleset() {
+  try {
+    await chrome.declarativeNetRequest.updateEnabledRulesets({
+      enableRulesetIds: [],
+      disableRulesetIds: ["ruleset_1"]
+    });
+    console.log('Ruleset 1 disabled');
+    return true;
+  } catch (error) {
+    console.error('Error disabling ruleset:', error);
+    return false;
+  }
+}
 
 /* Старая версия, тестировать
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -63,8 +124,32 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			return true; // Для асинхронного ответа
 			break;
 
+		case 'enable-ruleset':
+			enableRuleset()
+				.then(success => sendResponse({ success }))
+				.catch(error => sendResponse({ success: false, error: error.message }));
+			return true;
+
+		case 'disable-ruleset':
+			disableRuleset()
+				.then(success => sendResponse({ success }))
+				.catch(error => sendResponse({ success: false, error: error.message }));
+			return true;
+
 		default:
 			return false;
 			break;
 	}
+});
+
+// Enable/disable ruleset based on settings changes
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (Object.hasOwn(changes, SETTINGS_KEY)) {
+    const { newValue } = changes[SETTINGS_KEY];
+    if (newValue.status) {
+      enableRuleset();
+    } else {
+      disableRuleset();
+    }
+  }
 });
