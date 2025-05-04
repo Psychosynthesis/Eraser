@@ -8,13 +8,6 @@
 		"96": "icons/faviconMiddle.png",
 		"128": "icons/faviconBig.png"
 	},
-	"content_scripts": [
-	  {
-		"matches": [ "http://*/*", "https://*/*" ],
-		"run_at": "document_start",
-		"js": ["content.js"]
-	  }
-	],
 	"background": {
 		"service_worker": "background.js",
 		"type": "module"
@@ -26,7 +19,18 @@
 		"default_popup": "panel/panelMenu.html"
 	},
 	"permissions": [
-		"storage"
+		"storage",
+		"declarativeNetRequest"
 	],
-	"manifest_version": 3
+	"manifest_version": 3,
+	"declarative_net_request": {
+		"rule_resources": [{
+			"id": "ruleset_1",
+			"enabled": true,
+			"path": "rules_1.json"
+		}]
+	},
+	"host_permissions": [
+		"<all_urls>"
+	]
 }
