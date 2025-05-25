@@ -7,8 +7,8 @@ body, html {
 	background: #555;
 	color: #eee;
 	padding: 10px;
-	min-width: 160px;
-	max-width: 200px;
+	min-width: 180px;
+	max-width: 220px;
 	margin: 0 auto;
 	text-align: center;
 	border: 2px groove #eee;
@@ -73,7 +73,18 @@ body, html {
 
 .no-select { -ms-user-select: none; -moz-user-select: none; -webkit-user-select: none; }
 
-#eraserParamsToRemoveList { width: 100%; min-height: 100px; margin: 0; padding: 0px; resize: vertical; background: #222; color: #fff; font-size: 90%; }
+#eraserParamsToRemoveList {
+	width: 100%;
+	min-height: 100px;
+	margin: 0; padding: 0px;
+	resize: vertical;
+	background: #222;
+	color: #fff;
+	font-size: 90%;
+	-ms-overflow-style: none; scrollbar-width: none;
+}
+
+#eraserParamsToRemoveList::-webkit-scrollbar { display: none; }
 
 #eraserSaveParamsBtn {
   display: block;

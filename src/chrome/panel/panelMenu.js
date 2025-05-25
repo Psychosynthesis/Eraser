@@ -31,17 +31,30 @@ function onLoad(readedSettings){
 
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Set up radio button handler
-    document.getElementById("eraserCustomRadioItem").addEventListener("click", toggleUTMeraserStatus);
-    
     // Read initial settings
     readUTMeraserSettings(onLoad);
-    
+
     // Listen for storage changes
     chrome.storage.onChanged.addListener(storageChangeHandler);
+
+    // Загрузить текущие параметры при открытии popup
+    chrome.runtime.sendMessage({ action: 'get-settings' }, (response) => {
+    	if (response.paramsToRemove) {
+    		document.getElementById('eraserParamsToRemoveList').value = response.paramsToRemove.join(', ');
+    	}
+    });
+
+    // Set up radio button handler
+    document.getElementById("eraserCustomRadioItem").addEventListener("click", toggleUTMeraserStatus);
+
+    document.getElementById('eraserSaveParamsBtn').addEventListener('click', () => {
+      const params = document.getElementById('eraserParamsToRemoveList').value
+        .split(',')
+        .map(p => p.trim())
+        .filter(p => p);
+
+      chrome.runtime.sendMessage({ action: 'update-settings', paramsToRemove: params }, () => {
+        window.close(); // Закрыть popup после сохранения
+      });
+    });
 });
-
-// Сохранить новые параметры
-
-
-// Загрузить текущие параметры при открытии popup
