@@ -8,7 +8,9 @@
 ### About
   This is browser extension for removing a lot of tracking query params (`itm_*`, `utm_*`, `fbcli`, `gclid`, `ysclid`, ...and so on.) from URLs before they load.
   The list of blocked parameters may differ slightly for Firefox and Chrome, due to differences in the algorithms by which cleaning is carried out.
+
   The full list of options blocked by the Firefox version is here https://github.com/Psychosynthesis/Eraser/blob/main/src/firefox/common/constants.js#L11
+  
   Options blocked by the Chrome version are here: https://github.com/Psychosynthesis/Eraser/blob/main/src/chrome/rules.json#L10
 
 ---
@@ -52,6 +54,6 @@ Using "webRequestBlocking" is not compatible with the v.3 manifest because the g
 
 It is for this reason that the Chrome version, unfortunately, does not actually prevent tracking through all tracking parameters, but only prevent pre-specified list of parameters, and cleans the link from custom-specified params, which is useful anyway if user who wants to share the address.
 
-Old versions of Firefox (for old OS) doesn't allow you to work properly with the third version of the manifest, although it can still be done: the developer preview of Manifest V3 is available since Firefox 101. To test your extensions you need to turn on the MV3 features. To do this, go to `about:config` and:
+Old versions of Firefox (for old OS) doesn't allow you to work properly with the third version of the manifest, although it can still be done: the developer preview of Manifest V3 is available since Firefox 101. To test your extensions you need to turn on the MV3 features. To do this, go to `about:config` and: \
  `Set extensions.manifestV3.enabled to true.`  
  `Set xpinstall.signatures.required to false.`  
