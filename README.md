@@ -6,45 +6,33 @@
 [<img src="https://raw.githubusercontent.com/Psychosynthesis/Donation/main/images/Donate.png" alt="Donation page">](https://github.com/Psychosynthesis/Donation)
 
 ### About
-This is browser extension for removing a lot of tracking query params from URLs before they load.
-
-For now, the full list of query params that get stripped out of URLs are:
- - "itm_source"
- - "utm_campaign"
- - "utm_content"
- - "utm_id"
- - "utm_source"
- - "utm_referrer"
- - "utm_medium"
- - "utm_term"
- - "utm_name"
- - "fbclid"
- - "gclid"
- - "ysclid"
- - "_hsmi"
+  This is browser extension for removing a lot of tracking query params (`itm_*`, `utm_*`, `fbcli`, `gclid`, `ysclid`, ...and so on.) from URLs before they load.
+  The list of blocked parameters may differ slightly for Firefox and Chrome, due to differences in the algorithms by which cleaning is carried out.
+  The full list of options blocked by the Firefox version is here https://github.com/Psychosynthesis/Eraser/blob/main/src/firefox/common/constants.js#L11
+  Options blocked by the Chrome version are here: https://github.com/Psychosynthesis/Eraser/blob/main/src/chrome/rules.json#L10
 
 ---
 
 ### Debugging
-For debugging, you need to install extensions directly from the file.
+ For debugging, you need to install extensions directly from the file.
 
-To do this, type in the address bar: `about:debugging#/runtime/this-firefox`
+ To do this, type in the address bar: `about:debugging#/runtime/this-firefox`
 
-Sometimes it is necessary to install an unsigned update from a compiled file. For this go to `about:config` тype in search `xpinstall.signatures.required` and set to `false`.
+ Sometimes it is necessary to install an unsigned update from a compiled file. For this go to `about:config` тype in search `xpinstall.signatures.required` and set to `false`.
 
-In the current session, you will be able to install unsigned extensions until you restart firefox.
+ In the current session, you will be able to install unsigned extensions until you restart firefox.
 
-For build extensions run `bash build.sh` from the main directory of this repository.
+ For build extensions run `bash build.sh` from the main directory of this repository. Or just manually pack the files in the directory corresponding to the browser into a zip archive (for Firefox you need to change its extension to `.xpi`)
 
 ---
 
 ### Firefox installation
-Available on addons.mozilla.org: https://addons.mozilla.org/ru/firefox/addon/utm-eraser/  
+Available on addons.mozilla.org: https://addons.mozilla.org/ru/firefox/addon/utm-eraser
 
 ---
 
 ### Chrome / Chromium installation
-Available on Chrome Store: https://chrome.google.com/webstore/detail/utm-eraser/cepijkcnhhbjgiofhdhbomcgdmfjbbhb  
+Available on Chrome Store: https://chrome.google.com/webstore/detail/utm-eraser
 
 For debug extension on Chrome do next steps:  
  1. Menu -> "More Tools" -> Extensions menu
@@ -60,9 +48,9 @@ Might get a notification pop up warning you about dev-mode though.
 ### Differences between versions
 Please note that Firefox and Chrome versions use different approaches.  
 
-Using "webRequestBlocking" is not compatible with the v.3 manifest because the clowns from chrome team decided to charge money for this functionality - it's only available for "enterprise" add-ons (because it allowed to effectively block ads and, of course, that was unacceptable!). So now we can’t just upload extensions with an old version manifest to Google Store. Therefore, this approach only works in Firefox and we get the need to use different approaches and clumsy code. Big "thanks" to Chrome.  
+Using "webRequestBlocking" is not compatible with the v.3 manifest because the geniuses from Chrome team decided to charge money for this functionality — it's only available for "enterprise" add-ons (because it allowed to effectively block ads and, of course, that was unacceptable!). Therefore, now the extension can block only a pre-specified list of parameters **before** the page loads. The parameters specified manually in Chrome will clear the URL only **after** the page loads.
 
-It is for this reason that the Chrome version, unfortunately, does not actually prevent tracking through tracking parameters, but only cleans the link, which is useful anyway if user who wants to share the address. Perhaps in the future we will figure out what we can do with it.
+It is for this reason that the Chrome version, unfortunately, does not actually prevent tracking through all tracking parameters, but only prevent pre-specified list of parameters, and cleans the link from custom-specified params, which is useful anyway if user who wants to share the address.
 
 Even funnier is that Firefox still doesn't allow you to work properly with the third version of the manifest, although it can still be done: the developer preview of Manifest V3 is available since Firefox 101. To test your extensions you need to turn on the MV3 features. To do this, go to about:config and:  
  `Set extensions.manifestV3.enabled to true.`  
