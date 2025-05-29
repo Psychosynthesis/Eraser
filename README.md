@@ -47,13 +47,3 @@ Might get a notification pop up warning you about dev-mode though.
 
 ---
 
-### Differences between versions
-Please note that Firefox and Chrome versions use different approaches.  
-
-Using "webRequestBlocking" is not compatible with the v.3 manifest because the geniuses from Chrome team decided to charge money for this functionality — it's only available for "enterprise" add-ons (because it allowed to effectively block ads and, of course, that was unacceptable!). Therefore, now the extension can block only a pre-specified list of parameters **before** the page loads. The parameters specified manually in Chrome will clear the URL only **after** the page loads.
-
-It is for this reason that the Chrome version, unfortunately, does not actually prevent tracking through all tracking parameters, but only prevent pre-specified list of parameters, and cleans the link from custom-specified params, which is useful anyway if user who wants to share the address.
-
-Old versions of Firefox (for old OS) doesn't allow you to work properly with the third version of the manifest, although it can still be done: the developer preview of Manifest V3 is available since Firefox 101. To test your extensions you need to turn on the MV3 features. To do this, go to `about:config` and: \
- `Set extensions.manifestV3.enabled to true.`  
- `Set xpinstall.signatures.required to false.`  
