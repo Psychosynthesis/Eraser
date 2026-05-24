@@ -1,18 +1,16 @@
 "use strict";
+import { readUTMeraserSettings, setDefaultSettings } from './common/utils.js';
 import {
-	getParamsToRemoveForHostname,
+	getParamsForHostname,
 	normalizeUTMeraserSettings,
-	readUTMeraserSettings,
-	setDefaultSettings,
-} from './common/utils.js';
+} from './common/settings.js';
 import {
-	defaultSettings,
 	SETTINGS_KEY,
 	CANT_FIND_SETTINGS_MSG,
 } from './common/constants.js';
 
 // Local settings are used to not make an asynchronous request to the store
-let localReadedSettings = normalizeUTMeraserSettings(defaultSettings);
+let localReadedSettings = normalizeUTMeraserSettings();
 
 function localSettingsUpdater(changes, area) {
 	if (Object.hasOwn(changes, SETTINGS_KEY)) {
@@ -27,7 +25,7 @@ function stripTrackingQueryParams(request) {
 
 	let requestedUrl = new URL(request.url);
 	let match = false;
-	const paramsToRemove = getParamsToRemoveForHostname(localReadedSettings, requestedUrl.hostname);
+	const paramsToRemove = getParamsForHostname(localReadedSettings, requestedUrl.hostname);
 
 	paramsToRemove.forEach(name => {
 		if (requestedUrl.searchParams.has(name)) {

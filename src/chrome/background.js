@@ -1,20 +1,20 @@
 "use strict";
+import { readUTMeraserSettings, resetSettings } from './common/utils.js';
 import {
-	getParamsToRemoveForHostname,
+	getParamsForHostname,
+	isDomainScopedParamsEnabled,
 	normalizeHostname,
 	normalizeParamsList,
 	normalizeUTMeraserSettings,
-	readUTMeraserSettings,
-	resetSettings,
-} from './common/utils.js';
-import { defaultSettings, SETTINGS_KEY, CANT_FIND_SETTINGS_MSG } from './common/constants.js';
+} from './common/settings.js';
+import { SETTINGS_KEY, CANT_FIND_SETTINGS_MSG } from './common/constants.js';
 
 const RESOURCE_TYPES = ["xmlhttprequest", "main_frame", "sub_frame"];
 const GLOBAL_RULE_ID = 1;
 const DOMAIN_RULE_ID_START = 1000;
 
 // Local settings are used to not make an asynchronous request to the store.
-let cachedSettings = normalizeUTMeraserSettings(defaultSettings);
+let cachedSettings = normalizeUTMeraserSettings();
 
 function createRemoveParamsRule(id, paramsToRemove, condition = {}) {
 	const params = normalizeParamsList(paramsToRemove);
@@ -54,7 +54,8 @@ async function syncDynamicRules(settings = cachedSettings) {
 	const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
 	const removeRuleIds = existingRules.map(rule => rule.id);
 	const addRules = [];
-	const domainEntries = Object.entries(normalizedSettings.domainParamsToRemove);
+	const domainEntries = Object.entries(normalizedSettings.domainParamsToRemove)
+		.filter(([hostname]) => isDomainScopedParamsEnabled(normalizedSettings, hostname));
 
 	if (normalizedSettings.status) {
 		const globalRule = createRemoveParamsRule(
@@ -94,7 +95,7 @@ function initializeSettings() {
 		if (!Object.hasOwn(readSettings, 'status')) {
 			console.log(CANT_FIND_SETTINGS_MSG + ' on script load in background.js');
 			resetSettings();
-			cachedSettings = normalizeUTMeraserSettings(defaultSettings);
+			cachedSettings = normalizeUTMeraserSettings();
 		} else {
 			cachedSettings = normalizeUTMeraserSettings(readSettings);
 		}
@@ -109,7 +110,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 	readUTMeraserSettings((existingSettings) => {
 		if (details.reason === 'install' && !Object.hasOwn(existingSettings, 'status')) {
 			resetSettings();
-			cachedSettings = normalizeUTMeraserSettings(defaultSettings);
+			cachedSettings = normalizeUTMeraserSettings();
 		} else {
 			cachedSettings = normalizeUTMeraserSettings(existingSettings);
 		}
@@ -139,10 +140,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 				sendResponse({
 					status: settings.status,
 					paramsToRemove: message.hostname ?
-						getParamsToRemoveForHostname(settings, message.hostname) :
+						getParamsForHostname(settings, message.hostname) :
 						settings.paramsToRemove,
 					globalParamsToRemove: settings.paramsToRemove,
 					domainParamsToRemove: settings.domainParamsToRemove,
+					domainParamsEnabled: settings.domainParamsEnabled,
 				});
 			});
 			return true;

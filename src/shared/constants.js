@@ -81,7 +81,7 @@ export const DEFAULT_PARAMS_TO_REMOVE = [
 	"from"
 ];
 
-export const SETTINGS_VERSION = 2;
+export const SETTINGS_VERSION = 3;
 
 export const defaultSettings = {
 	settingsVersion: SETTINGS_VERSION,

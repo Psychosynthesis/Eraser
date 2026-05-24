@@ -1,3 +1,5 @@
+import { defaultSettings } from './constants.js';
+
 export const normalizeHostname = (hostname = '') => String(hostname).trim().toLowerCase();
 
 export const normalizeParamsList = (params = []) => {
@@ -34,8 +36,28 @@ export const normalizeDomainParamsToRemove = (domainParamsToRemove = {}) => {
 
 const hasOwn = (target, key) => Object.prototype.hasOwnProperty.call(target, key);
 
-const normalizeSavedParams = (source, defaultSettings) => {
-	const defaultParams = normalizeParamsList(defaultSettings.paramsToRemove);
+export const normalizeDomainParamsEnabled = (
+	domainParamsEnabled = {},
+	domainParamsToRemove = {}
+) => {
+	const enabledSource = (
+		domainParamsEnabled &&
+		typeof domainParamsEnabled === 'object' &&
+		!Array.isArray(domainParamsEnabled)
+	) ? domainParamsEnabled : {};
+	const normalizedDomainParams = normalizeDomainParamsToRemove(domainParamsToRemove);
+
+	return Object.keys(normalizedDomainParams).reduce((result, hostname) => {
+		result[hostname] = hasOwn(enabledSource, hostname) ?
+			enabledSource[hostname] !== false :
+			true;
+
+		return result;
+	}, {});
+};
+
+const normalizeSavedParams = (source, settingsDefaults) => {
+	const defaultParams = normalizeParamsList(settingsDefaults.paramsToRemove);
 
 	if (!hasOwn(source, 'paramsToRemove')) {
 		return defaultParams;
@@ -53,26 +75,33 @@ const normalizeSavedParams = (source, defaultSettings) => {
 	return savedParams;
 };
 
-export const normalizeUTMeraserSettings = (settings = {}, defaultSettings = {}) => {
+export const normalizeUTMeraserSettings = (settings = {}, settingsDefaults = defaultSettings) => {
 	const source = settings && typeof settings === 'object' ? settings : {};
-	const settingsVersion = defaultSettings.settingsVersion || source.settingsVersion;
+	const settingsVersion = settingsDefaults.settingsVersion || source.settingsVersion;
+	const domainParamsToRemove = normalizeDomainParamsToRemove(
+		hasOwn(source, 'domainParamsToRemove') ?
+			source.domainParamsToRemove :
+			settingsDefaults.domainParamsToRemove
+	);
 
 	return {
-		...defaultSettings,
+		...settingsDefaults,
 		...source,
 		settingsVersion,
-		status: typeof source.status === 'boolean' ? source.status : defaultSettings.status !== false,
-		paramsToRemove: normalizeSavedParams(source, defaultSettings),
-		domainParamsToRemove: normalizeDomainParamsToRemove(
-			hasOwn(source, 'domainParamsToRemove') ?
-				source.domainParamsToRemove :
-				defaultSettings.domainParamsToRemove
+		status: typeof source.status === 'boolean' ? source.status : settingsDefaults.status !== false,
+		paramsToRemove: normalizeSavedParams(source, settingsDefaults),
+		domainParamsToRemove,
+		domainParamsEnabled: normalizeDomainParamsEnabled(
+			hasOwn(source, 'domainParamsEnabled') ?
+				source.domainParamsEnabled :
+				settingsDefaults.domainParamsEnabled,
+			domainParamsToRemove
 		),
 	};
 };
 
-export const hasDomainScopedParams = (settings = {}, hostname = '', defaultSettings = {}) => {
-	const normalizedSettings = normalizeUTMeraserSettings(settings, defaultSettings);
+export const hasDomainScopedParams = (settings = {}, hostname = '', settingsDefaults = defaultSettings) => {
+	const normalizedSettings = normalizeUTMeraserSettings(settings, settingsDefaults);
 	const normalizedHostname = normalizeHostname(hostname);
 
 	return Boolean(
@@ -81,11 +110,21 @@ export const hasDomainScopedParams = (settings = {}, hostname = '', defaultSetti
 	);
 };
 
-export const getParamsForHostname = (settings = {}, hostname = '', defaultSettings = {}) => {
-	const normalizedSettings = normalizeUTMeraserSettings(settings, defaultSettings);
+export const isDomainScopedParamsEnabled = (settings = {}, hostname = '', settingsDefaults = defaultSettings) => {
+	const normalizedSettings = normalizeUTMeraserSettings(settings, settingsDefaults);
 	const normalizedHostname = normalizeHostname(hostname);
 
-	if (hasDomainScopedParams(normalizedSettings, normalizedHostname, defaultSettings)) {
+	return Boolean(
+		hasDomainScopedParams(normalizedSettings, normalizedHostname, settingsDefaults) &&
+		normalizedSettings.domainParamsEnabled[normalizedHostname] !== false
+	);
+};
+
+export const getParamsForHostname = (settings = {}, hostname = '', settingsDefaults = defaultSettings) => {
+	const normalizedSettings = normalizeUTMeraserSettings(settings, settingsDefaults);
+	const normalizedHostname = normalizeHostname(hostname);
+
+	if (isDomainScopedParamsEnabled(normalizedSettings, normalizedHostname, settingsDefaults)) {
 		return normalizedSettings.domainParamsToRemove[normalizedHostname];
 	}
 
@@ -96,15 +135,15 @@ export const getScopedParams = (
 	settings = {},
 	hostname = '',
 	onlyForDomain = false,
-	defaultSettings = {}
+	settingsDefaults = defaultSettings
 ) => {
-	const normalizedSettings = normalizeUTMeraserSettings(settings, defaultSettings);
+	const normalizedSettings = normalizeUTMeraserSettings(settings, settingsDefaults);
 	const normalizedHostname = normalizeHostname(hostname);
 
 	if (onlyForDomain && normalizedHostname) {
-		return hasDomainScopedParams(normalizedSettings, normalizedHostname, defaultSettings) ?
+		return hasDomainScopedParams(normalizedSettings, normalizedHostname, settingsDefaults) ?
 			normalizedSettings.domainParamsToRemove[normalizedHostname] :
-			normalizeParamsList(defaultSettings.paramsToRemove);
+			normalizeParamsList(settingsDefaults.paramsToRemove);
 	}
 
 	return normalizedSettings.paramsToRemove;
@@ -115,29 +154,33 @@ export const setScopedParams = (
 	hostname = '',
 	onlyForDomain = false,
 	params = [],
-	defaultSettings = {}
+	settingsDefaults = defaultSettings
 ) => {
-	const normalizedSettings = normalizeUTMeraserSettings(settings, defaultSettings);
+	const normalizedSettings = normalizeUTMeraserSettings(settings, settingsDefaults);
 	const normalizedHostname = normalizeHostname(hostname);
 	const normalizedParams = normalizeParamsList(params);
 	const domainParamsToRemove = { ...normalizedSettings.domainParamsToRemove };
+	const domainParamsEnabled = { ...normalizedSettings.domainParamsEnabled };
 
 	if (onlyForDomain && normalizedHostname) {
 		domainParamsToRemove[normalizedHostname] = normalizedParams;
+		domainParamsEnabled[normalizedHostname] = true;
 
 		return {
 			...normalizedSettings,
 			domainParamsToRemove,
+			domainParamsEnabled,
 		};
 	}
 
 	if (normalizedHostname) {
-		delete domainParamsToRemove[normalizedHostname];
+		domainParamsEnabled[normalizedHostname] = false;
 	}
 
 	return {
 		...normalizedSettings,
 		paramsToRemove: normalizedParams,
 		domainParamsToRemove,
+		domainParamsEnabled,
 	};
 };

@@ -1,19 +1,9 @@
-import { defaultSettings, SETTINGS_KEY, CANT_FIND_SETTINGS_MSG } from './constants.js';
-import { normalizeUTMeraserSettings } from './sharedUtils.js';
-
-export {
-	getParamsForScope,
-	getParamsToRemoveForHostname,
-	hasDomainSpecificParams,
-	normalizeHostname,
-	normalizeParamsList,
-	normalizeUTMeraserSettings,
-	setParamsForScope,
-} from './sharedUtils.js';
+import { SETTINGS_KEY, CANT_FIND_SETTINGS_MSG } from './constants.js';
+import { normalizeUTMeraserSettings } from './settings.js';
 
 export const resetSettings = () => {
 	console.log('Set default settings');
-	chrome.storage.sync.set({ [SETTINGS_KEY]: normalizeUTMeraserSettings(defaultSettings) });
+	chrome.storage.sync.set({ [SETTINGS_KEY]: normalizeUTMeraserSettings() });
 };
 
 export const readUTMeraserSettings = (callback) => {
@@ -21,7 +11,7 @@ export const readUTMeraserSettings = (callback) => {
 		if (!data[SETTINGS_KEY]) {
 			console.log(CANT_FIND_SETTINGS_MSG + ' at readUTMeraserSettings');
 			resetSettings();
-			callback(normalizeUTMeraserSettings(defaultSettings));
+			callback(normalizeUTMeraserSettings());
 		} else {
 			callback(normalizeUTMeraserSettings(data[SETTINGS_KEY] || {}));
 		}

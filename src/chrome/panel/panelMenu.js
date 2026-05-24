@@ -1,20 +1,23 @@
 import {
-	getParamsForScope,
-	hasDomainSpecificParams,
-	normalizeParamsList,
-	normalizeUTMeraserSettings,
 	readUTMeraserSettings,
 	resetSettings,
 } from '../common/utils.js';
+import {
+	getScopedParams,
+	hasDomainScopedParams,
+	isDomainScopedParamsEnabled,
+	normalizeParamsList,
+	normalizeUTMeraserSettings,
+	setScopedParams,
+} from '../common/settings.js';
 import { defaultSettings, SETTINGS_KEY, CANT_FIND_SETTINGS_MSG } from '../common/constants.js';
 
 let currentHostname = '';
-let currentSettings = normalizeUTMeraserSettings(defaultSettings);
+let currentSettings = normalizeUTMeraserSettings();
 let activeOnlyForDomain = false;
 let globalParamsDraft = [];
 let domainParamsDraft = [];
 let domainParamsSaved = false;
-let domainParamsTouched = false;
 
 function setSwitchControl(element, status) {
 	element.className = status ? "eraserCustomRadio checked" : "eraserCustomRadio";
@@ -71,29 +74,35 @@ function renderActiveScope() {
 function initializeDrafts(settings) {
 	currentSettings = normalizeUTMeraserSettings(settings);
 	globalParamsDraft = [...currentSettings.paramsToRemove];
-	domainParamsSaved = hasDomainSpecificParams(currentSettings, currentHostname);
-	domainParamsTouched = false;
+	domainParamsSaved = hasDomainScopedParams(currentSettings, currentHostname);
 	domainParamsDraft = domainParamsSaved ?
-		[...getParamsForScope(currentSettings, currentHostname, true)] :
+		[...getScopedParams(currentSettings, currentHostname, true)] :
 		[...defaultSettings.paramsToRemove];
-	activeOnlyForDomain = Boolean(currentHostname && domainParamsSaved);
+	activeOnlyForDomain = Boolean(
+		currentHostname &&
+		isDomainScopedParamsEnabled(currentSettings, currentHostname)
+	);
 
 	setStatusControl(currentSettings.status);
 	renderActiveScope();
 }
 
 function buildSettingsFromDrafts() {
-	const domainParamsToRemove = { ...currentSettings.domainParamsToRemove };
-
-	if (currentHostname && (domainParamsSaved || domainParamsTouched || activeOnlyForDomain)) {
-		domainParamsToRemove[currentHostname] = normalizeParamsList(domainParamsDraft);
-	}
-
-	return normalizeUTMeraserSettings({
+	const settingsWithGlobalDraft = normalizeUTMeraserSettings({
 		...currentSettings,
 		paramsToRemove: normalizeParamsList(globalParamsDraft),
-		domainParamsToRemove,
 	});
+
+	if (!currentHostname) {
+		return settingsWithGlobalDraft;
+	}
+
+	return setScopedParams(
+		settingsWithGlobalDraft,
+		currentHostname,
+		activeOnlyForDomain,
+		activeOnlyForDomain ? domainParamsDraft : globalParamsDraft
+	);
 }
 
 function switchDomainScope() {
@@ -127,8 +136,14 @@ function storageChangeHandler(changes, area) {
 			paramsToRemove: globalParamsDraft,
 			domainParamsToRemove: {
 				...nextSettings.domainParamsToRemove,
-				...(currentHostname && (domainParamsSaved || domainParamsTouched || activeOnlyForDomain) ? {
+				...(currentHostname && (domainParamsSaved || activeOnlyForDomain) ? {
 					[currentHostname]: domainParamsDraft,
+				} : {}),
+			},
+			domainParamsEnabled: {
+				...nextSettings.domainParamsEnabled,
+				...(currentHostname ? {
+					[currentHostname]: activeOnlyForDomain,
 				} : {}),
 			},
 		};
@@ -174,7 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	getParamsInput().addEventListener('input', () => {
 		if (activeOnlyForDomain) {
 			domainParamsDraft = readParamsText();
-			domainParamsTouched = true;
 		} else {
 			globalParamsDraft = readParamsText();
 		}
