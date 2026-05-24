@@ -1,30 +1,35 @@
 "use strict";
-import { readUTMeraserSettings, setDefaultSettings } from './common/utils.js';
+import {
+	getParamsToRemoveForHostname,
+	normalizeUTMeraserSettings,
+	readUTMeraserSettings,
+	setDefaultSettings,
+} from './common/utils.js';
 import {
 	defaultSettings,
 	SETTINGS_KEY,
 	CANT_FIND_SETTINGS_MSG,
-	DEFAULT_PARAMS_TO_REMOVE,
 } from './common/constants.js';
 
 // Local settings are used to not make an asynchronous request to the store
-let localReadedSettins = { ...defaultSettings };
+let localReadedSettings = normalizeUTMeraserSettings(defaultSettings);
 
 function localSettingsUpdater(changes, area) {
 	if (Object.hasOwn(changes, SETTINGS_KEY)) {
-		localReadedSettins =  changes[SETTINGS_KEY].newValue;
+		localReadedSettings = normalizeUTMeraserSettings(changes[SETTINGS_KEY].newValue);
 	}
 };
 
 function stripTrackingQueryParams(request) {
 	const dontProcessUrlComm = { cancel: false };
 
-	if (!localReadedSettins.status) { return dontProcessUrlComm; }
+	if (!localReadedSettings.status) { return dontProcessUrlComm; }
 
 	let requestedUrl = new URL(request.url);
 	let match = false;
+	const paramsToRemove = getParamsToRemoveForHostname(localReadedSettings, requestedUrl.hostname);
 
-	DEFAULT_PARAMS_TO_REMOVE.forEach(name => {
+	paramsToRemove.forEach(name => {
 		if (requestedUrl.searchParams.has(name)) {
 			requestedUrl.searchParams.delete(name);
 			match = true;
@@ -36,16 +41,18 @@ function stripTrackingQueryParams(request) {
 };
 
 function checkForSavedSettings(settings) {
-	if (!Object.hasOwn(settings, SETTINGS_KEY)) {
+	if (!Object.hasOwn(settings, 'status')) {
 		console.log(CANT_FIND_SETTINGS_MSG);
 		setDefaultSettings();
 	} else {
-		localReadedSettins = { ...settings[SETTINGS_KEY] };
+		localReadedSettings = normalizeUTMeraserSettings(settings);
 	}
 };
 
-browser.runtime.onInstalled.addListener(() => { // Store settings once on install
-	setDefaultSettings();
+browser.runtime.onInstalled.addListener((details) => { // Store settings once on install
+	if (details.reason === 'install') {
+		setDefaultSettings();
+	}
 });
 
 // Повторная проверка настроек при запуске профиля, который установил расширение

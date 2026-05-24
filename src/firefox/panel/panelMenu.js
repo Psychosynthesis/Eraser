@@ -1,44 +1,190 @@
-import { readUTMeraserSettings, setDefaultSettings } from '../common/utils.js';
-import { SETTINGS_KEY, CANT_FIND_SETTINGS_MSG } from '../common/constants.js';
+import {
+	getParamsForScope,
+	hasDomainSpecificParams,
+	normalizeParamsList,
+	normalizeUTMeraserSettings,
+	readUTMeraserSettings,
+	setDefaultSettings,
+} from '../common/utils.js';
+import { defaultSettings, SETTINGS_KEY, CANT_FIND_SETTINGS_MSG } from '../common/constants.js';
+
+let currentHostname = '';
+let currentSettings = normalizeUTMeraserSettings(defaultSettings);
+let activeOnlyForDomain = false;
+let globalParamsDraft = [];
+let domainParamsDraft = [];
+let domainParamsSaved = false;
+let domainParamsTouched = false;
+
+function setSwitchControl(element, status) {
+	element.className = status ? "eraserCustomRadio checked" : "eraserCustomRadio";
+}
+
+function setStatusControl(status) {
+	setSwitchControl(document.getElementById("eraserCustomRadioItem"), status);
+}
+
+function getDomainScopeSwitch() {
+	return document.getElementById("eraserDomainScopeSwitch");
+}
+
+function getParamsInput() {
+	return document.getElementById('eraserParamsToRemoveList');
+}
+
+function readParamsText() {
+	return normalizeParamsList(getParamsInput().value.split(','));
+}
+
+function setParamsText(params) {
+	getParamsInput().value = params.join(', ');
+}
+
+function rememberActiveDraft() {
+	if (activeOnlyForDomain) {
+		domainParamsDraft = readParamsText();
+	} else {
+		globalParamsDraft = readParamsText();
+	}
+}
+
+function updateScopeLabel() {
+	const label = document.getElementById("eraserOnlyForDomainLabel");
+	const scopeLabel = document.getElementById("eraserParamsScopeLabel");
+	const container = document.querySelector('.domain-scope-switch-container');
+
+	container.classList.toggle('disabled', !currentHostname);
+	label.textContent = currentHostname ?
+		`Only for ${currentHostname}` :
+		"Only for this domain";
+	scopeLabel.textContent = activeOnlyForDomain && currentHostname ?
+		`UTM's to remove for ${currentHostname} (separated by ,)` :
+		"UTM's to remove for all sites (separated by ,)";
+}
+
+function renderActiveScope() {
+	setSwitchControl(getDomainScopeSwitch(), activeOnlyForDomain);
+	updateScopeLabel();
+	setParamsText(activeOnlyForDomain ? domainParamsDraft : globalParamsDraft);
+}
+
+function initializeDrafts(settings) {
+	currentSettings = normalizeUTMeraserSettings(settings);
+	globalParamsDraft = [...currentSettings.paramsToRemove];
+	domainParamsSaved = hasDomainSpecificParams(currentSettings, currentHostname);
+	domainParamsTouched = false;
+	domainParamsDraft = domainParamsSaved ?
+		[...getParamsForScope(currentSettings, currentHostname, true)] :
+		[...defaultSettings.paramsToRemove];
+	activeOnlyForDomain = Boolean(currentHostname && domainParamsSaved);
+
+	setStatusControl(currentSettings.status);
+	renderActiveScope();
+}
+
+function buildSettingsFromDrafts() {
+	const domainParamsToRemove = { ...currentSettings.domainParamsToRemove };
+
+	if (currentHostname && (domainParamsSaved || domainParamsTouched || activeOnlyForDomain)) {
+		domainParamsToRemove[currentHostname] = normalizeParamsList(domainParamsDraft);
+	}
+
+	return normalizeUTMeraserSettings({
+		...currentSettings,
+		paramsToRemove: normalizeParamsList(globalParamsDraft),
+		domainParamsToRemove,
+	});
+}
+
+function switchDomainScope() {
+	if (!currentHostname) {
+		return;
+	}
+
+	rememberActiveDraft();
+	activeOnlyForDomain = !activeOnlyForDomain;
+	renderActiveScope();
+}
+
+function readCurrentHostname(callback) {
+	browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+		const [activeTab] = tabs || [];
+
+		try {
+			const url = new URL(activeTab && activeTab.url);
+			callback(/^https?:$/.test(url.protocol) ? url.hostname.toLowerCase() : '');
+		} catch (error) {
+			callback('');
+		}
+	});
+}
 
 function storageChangeHandler(changes, area) {
 	if (Object.hasOwn(changes, SETTINGS_KEY)) {
-	  const { oldValue, newValue } = changes[SETTINGS_KEY];
-	  if (oldValue && (newValue.status !== oldValue.status)) {
-		  document.getElementById("eraserCustomRadioItem").className = oldValue.status ?
-		  	"eraserCustomRadio" : "eraserCustomRadio checked";
-	  }
+		const nextSettings = normalizeUTMeraserSettings(changes[SETTINGS_KEY].newValue);
+		currentSettings = {
+			...nextSettings,
+			paramsToRemove: globalParamsDraft,
+			domainParamsToRemove: {
+				...nextSettings.domainParamsToRemove,
+				...(currentHostname && (domainParamsSaved || domainParamsTouched || activeOnlyForDomain) ? {
+					[currentHostname]: domainParamsDraft,
+				} : {}),
+			},
+		};
+		setStatusControl(nextSettings.status);
 	}
 }
 
 function toggleUTMeraserSettings() {
-	readUTMeraserSettings((readedSettings) => {
-		if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
+	readUTMeraserSettings((readSettings) => {
+		if (!Object.hasOwn(readSettings, 'status')) {
 			console.log(CANT_FIND_SETTINGS_MSG);
 			setDefaultSettings();
 		} else {
+			const settings = normalizeUTMeraserSettings(readSettings);
 			browser.storage.sync.set({
-				[SETTINGS_KEY]: {
-					...readedSettings[SETTINGS_KEY],
-					status: !readedSettings[SETTINGS_KEY].status,
-				}
+				[SETTINGS_KEY]: { ...settings, status: !settings.status }
 			});
 		}
 	});
 }
 
-function onLoad(readedSettings){
-	if (!Object.hasOwn(readedSettings, SETTINGS_KEY)) {
+function onLoad(readSettings) {
+	if (!Object.hasOwn(readSettings, 'status')) {
 		console.log(CANT_FIND_SETTINGS_MSG);
 		setDefaultSettings();
 	} else {
-		document.getElementById("eraserCustomRadioItem").className = readedSettings[SETTINGS_KEY].status ?
-			"eraserCustomRadio checked" : "eraserCustomRadio";
+		initializeDrafts(readSettings);
 	}
-};
+}
 
-// При открытии попыапе вешаем обработчик на радио
-document.getElementById("eraserCustomRadioItem").addEventListener("click", toggleUTMeraserSettings);
- // Читаем настройки
-readUTMeraserSettings(onLoad);
-browser.storage.onChanged.addListener(storageChangeHandler);
+function saveSettings() {
+	rememberActiveDraft();
+	const updatedSettings = buildSettingsFromDrafts();
+
+	browser.storage.sync.set({ [SETTINGS_KEY]: updatedSettings }).then(() => {
+		window.close();
+	});
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+	readCurrentHostname((hostname) => {
+		currentHostname = hostname;
+		readUTMeraserSettings(onLoad);
+	});
+
+	document.getElementById("eraserCustomRadioItem").addEventListener("click", toggleUTMeraserSettings);
+	getDomainScopeSwitch().addEventListener('click', switchDomainScope);
+	getParamsInput().addEventListener('input', () => {
+		if (activeOnlyForDomain) {
+			domainParamsDraft = readParamsText();
+			domainParamsTouched = true;
+		} else {
+			globalParamsDraft = readParamsText();
+		}
+	});
+	document.getElementById('eraserSaveParamsBtn').addEventListener('click', saveSettings);
+
+	browser.storage.onChanged.addListener(storageChangeHandler);
+});

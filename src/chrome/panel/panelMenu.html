@@ -16,9 +16,17 @@
 		</div>
 		<hr />
 		<div class="params-container">
-		    <label>UTM's to remove (separated by ,)</label> <br /><br />
-		    <textarea id="eraserParamsToRemoveList"></textarea>
-		    <button id="eraserSaveParamsBtn">Save</button>
+			<div class="domain-scope-switch-container">
+				<div class="domain-scope-title" id="eraserOnlyForDomainLabel">Only for this domain</div>
+				<div class="eraserCustomRadio" id="eraserDomainScopeSwitch">
+					<div class="eraserCustomRadio-off-title">All</div>
+					<div class="eraserCustomRadio-state-marker no-select"><div class="eraserCustomRadio-punkt">&nbsp;</div></div>
+					<div class="eraserCustomRadio-on-title">Site</div>
+				</div>
+			</div>
+			<label id="eraserParamsScopeLabel">UTM's to remove (separated by ,)</label> <br /><br />
+			<textarea id="eraserParamsToRemoveList"></textarea>
+			<button id="eraserSaveParamsBtn">Save</button>
 		</div>
 	</div>
 	<script src="panelMenu.js" type="module"></script>

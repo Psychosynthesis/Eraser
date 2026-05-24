@@ -1,0 +1,10 @@
+{
+  "manifestDesc" : {
+    "message": "Очистка отслеживающих URL-параметров, таких как utm, fbclid, gclid, etc",
+    "description": "Short extension description for manifest file"
+  },
+  "CANT_FIND_SETTINGS_MSG": {
+    "message": "Настройки UTMeraser не найдены. Записываем новые.",
+    "description": "Console message for logging new settings setup (это сообщение видно лишь в консоли)"
+  }
+}

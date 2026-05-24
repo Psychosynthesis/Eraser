@@ -1,7 +1,10 @@
 async function stripTrackingQueryParams() {
   let response = false;
   try {
-    response = await chrome.runtime.sendMessage({ action: 'get-settings' });
+    response = await chrome.runtime.sendMessage({
+      action: 'get-settings',
+      hostname: window.location.hostname
+    });
   } catch (error) {
     console.error('Error on send message:', error, 'Is extension enabled?');
   }

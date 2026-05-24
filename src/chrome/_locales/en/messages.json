@@ -1,0 +1,10 @@
+{
+  "manifestDesc" : {
+    "message": "Clean tracking query parameters from URLs, such as utm, fbclid, gclid, etc",
+    "description": "Short extension description for manifest file"
+  },
+  "CANT_FIND_SETTINGS_MSG": {
+    "message": "Can't find the UTMeraser settings. Setup new.",
+    "description": "Console message for logging new settings setup"
+  }
+}

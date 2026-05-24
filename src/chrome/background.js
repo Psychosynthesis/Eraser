@@ -1,115 +1,166 @@
 "use strict";
-import { readUTMeraserSettings, resetSettings } from './common/utils.js';
+import {
+	getParamsToRemoveForHostname,
+	normalizeHostname,
+	normalizeParamsList,
+	normalizeUTMeraserSettings,
+	readUTMeraserSettings,
+	resetSettings,
+} from './common/utils.js';
 import { defaultSettings, SETTINGS_KEY, CANT_FIND_SETTINGS_MSG } from './common/constants.js';
 
-// Local settings are used to not make an asynchronous request to the store
-let cachedSettings = { ...defaultSettings };
+const RESOURCE_TYPES = ["xmlhttprequest", "main_frame", "sub_frame"];
+const GLOBAL_RULE_ID = 1;
+const DOMAIN_RULE_ID_START = 1000;
 
-// Enable/disable ruleset functions
-async function toggleRuleset(status) {
-  try {
-    await chrome.declarativeNetRequest.updateEnabledRulesets({
-			enableRulesetIds: status ? ["ruleset"] : [],
-			disableRulesetIds: status ? [] : ["ruleset"],
-    });
-		console.log(`Ruleset ${ status ? 'enabled' : 'disabled' }`);
-    return true;
-  } catch (error) {
-		console.error('Error toggle ruleset:', error);
-    return false;
-  }
+// Local settings are used to not make an asynchronous request to the store.
+let cachedSettings = normalizeUTMeraserSettings(defaultSettings);
+
+function createRemoveParamsRule(id, paramsToRemove, condition = {}) {
+	const params = normalizeParamsList(paramsToRemove);
+
+	if (!params.length) {
+		return null;
+	}
+
+	return {
+		id,
+		priority: 1,
+		action: {
+			type: "redirect",
+			redirect: {
+				transform: {
+					queryTransform: {
+						removeParams: params,
+					},
+				},
+			},
+		},
+		condition: {
+			...condition,
+			resourceTypes: RESOURCE_TYPES,
+		},
+	};
 }
 
-// Store settings only on first install, sync on update
-chrome.runtime.onInstalled.addListener(async (details) => {
-    if (details.reason === 'install') {
-        // Check if settings already exist in storage
-        readUTMeraserSettings(async (existingSettings) => {
-            if (!Object.hasOwn(existingSettings, 'status')) {
-                // No existing settings found - set defaults
-                await resetSettings();
-                cachedSettings = { ...defaultSettings };
-                console.log('Initial settings created');
-            } else {
-                // Use existing settings
-                cachedSettings = { ...existingSettings };
-                // Ensure ruleset state matches existing settings
-								toggleRuleset(cachedSettings.status)
-                console.log('Using existing settings');
-            }
-        });
-    } else {
-        // Update, reload, etc - sync with existing settings
-        readUTMeraserSettings((existingSettings) => {
-            if (Object.hasOwn(existingSettings, 'status')) {
-                cachedSettings = { ...existingSettings };
-                // Ensure ruleset state matches settings
-								toggleRuleset(cachedSettings.status);
-            }
-        });
-    }
+function createDomainCondition(hostname) {
+	return {
+		requestDomains: [normalizeHostname(hostname)],
+	};
+}
+
+async function syncDynamicRules(settings = cachedSettings) {
+	const normalizedSettings = normalizeUTMeraserSettings(settings);
+	const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
+	const removeRuleIds = existingRules.map(rule => rule.id);
+	const addRules = [];
+	const domainEntries = Object.entries(normalizedSettings.domainParamsToRemove);
+
+	if (normalizedSettings.status) {
+		const globalRule = createRemoveParamsRule(
+			GLOBAL_RULE_ID,
+			normalizedSettings.paramsToRemove,
+			domainEntries.length ? {
+				urlFilter: "*",
+				excludedRequestDomains: domainEntries.map(([hostname]) => hostname),
+			} : {
+				urlFilter: "*",
+			}
+		);
+
+		if (globalRule) {
+			addRules.push(globalRule);
+		}
+
+		domainEntries.forEach(([hostname, params], index) => {
+			const domainRule = createRemoveParamsRule(
+				DOMAIN_RULE_ID_START + index,
+				params,
+				createDomainCondition(hostname)
+			);
+
+			if (domainRule) {
+				addRules.push(domainRule);
+			}
+		});
+	}
+
+	await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds, addRules });
+	cachedSettings = normalizedSettings;
+}
+
+function initializeSettings() {
+	readUTMeraserSettings((readSettings) => {
+		if (!Object.hasOwn(readSettings, 'status')) {
+			console.log(CANT_FIND_SETTINGS_MSG + ' on script load in background.js');
+			resetSettings();
+			cachedSettings = normalizeUTMeraserSettings(defaultSettings);
+		} else {
+			cachedSettings = normalizeUTMeraserSettings(readSettings);
+		}
+
+		syncDynamicRules(cachedSettings).catch(error => {
+			console.error('Error syncing dynamic rules:', error);
+		});
+	});
+}
+
+chrome.runtime.onInstalled.addListener((details) => {
+	readUTMeraserSettings((existingSettings) => {
+		if (details.reason === 'install' && !Object.hasOwn(existingSettings, 'status')) {
+			resetSettings();
+			cachedSettings = normalizeUTMeraserSettings(defaultSettings);
+		} else {
+			cachedSettings = normalizeUTMeraserSettings(existingSettings);
+		}
+
+		syncDynamicRules(cachedSettings).catch(error => {
+			console.error('Error syncing dynamic rules on install/update:', error);
+		});
+	});
 });
 
-function localSettingsUpdater(changes, area) {
+chrome.runtime.onStartup.addListener(initializeSettings);
+chrome.storage.onChanged.addListener((changes) => {
 	if (Object.hasOwn(changes, SETTINGS_KEY)) {
-		const { newValue } = changes[SETTINGS_KEY];
-		toggleRuleset(newValue.status);
-		cachedSettings = { ...changes[SETTINGS_KEY].newValue };
-	}
-};
-
-chrome.storage.onChanged.addListener(localSettingsUpdater);
-
-// Get settings on script load
-readUTMeraserSettings((readedSettings) => {
-	console.log('readedSettings on first load: ', readedSettings)
-	if (!Object.hasOwn(readedSettings, 'status')) {
-		console.log(CANT_FIND_SETTINGS_MSG + ' on script load in background.js');
-		resetSettings();
-	} else {
-		cachedSettings = { ...readedSettings };
+		syncDynamicRules(changes[SETTINGS_KEY].newValue).catch(error => {
+			console.error('Error syncing dynamic rules after settings change:', error);
+		});
 	}
 });
+
+initializeSettings();
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	switch (message.action) {
 		case 'get-settings':
 			readUTMeraserSettings((data) => {
-				 const settings = Object.hasOwn(data, 'status') ? data : cachedSettings;
-			   sendResponse({
-			     status: settings.status,
-			     paramsToRemove: settings.paramsToRemove
-			   });
+				const settings = Object.hasOwn(data, 'status') ? normalizeUTMeraserSettings(data) : cachedSettings;
+				sendResponse({
+					status: settings.status,
+					paramsToRemove: message.hostname ?
+						getParamsToRemoveForHostname(settings, message.hostname) :
+						settings.paramsToRemove,
+					globalParamsToRemove: settings.paramsToRemove,
+					domainParamsToRemove: settings.domainParamsToRemove,
+				});
 			});
-			return true; // Required for async response
-			break;
-
-		case 'update-settings':
-			const updatedSettings = {
-				...cachedSettings,
-				paramsToRemove: [...message.paramsToRemove]
-			};
-			chrome.storage.sync.set({ [SETTINGS_KEY]: updatedSettings }, () => {
-				cachedSettings = {...updatedSettings};
-				sendResponse({ success: true });
-			});
-			return true; // Required for async response
-			break;
-
-		case 'enable-ruleset':
-			enableRuleset()
-				.then(success => sendResponse({ success }))
-				.catch(error => sendResponse({ success: false, error: error.message }));
 			return true;
 
-		case 'disable-ruleset':
-			disableRuleset()
-				.then(success => sendResponse({ success }))
-				.catch(error => sendResponse({ success: false, error: error.message }));
+		case 'update-settings':
+			const updatedSettings = normalizeUTMeraserSettings(message.settings || {
+				...cachedSettings,
+				paramsToRemove: [...(message.paramsToRemove || cachedSettings.paramsToRemove)],
+			});
+
+			chrome.storage.sync.set({ [SETTINGS_KEY]: updatedSettings }, () => {
+				syncDynamicRules(updatedSettings)
+					.then(() => sendResponse({ success: true }))
+					.catch(error => sendResponse({ success: false, error: error.message }));
+			});
 			return true;
 
 		default:
 			return false;
-			break;
 	}
 });

@@ -20,5 +20,5 @@ export const DEFAULT_PARAMS_TO_REMOVE = [ // TODO: make configurable
 	"os_ehash","_gl","__twitter_impression","wt_mc","wtrid","tracking_source","ceneo_spo",
 	"__hsfp","__hssc","__hstc","_hsenc","hsCtaTracking","ml_subscriber","ml_subscriber_hash",
 	"msclkid","oly_anon_id","oly_enc_id","rb_clickid","s_cid","vero_conv","vero_id", "vn_", "wickedid","twclid",
-	"_trksid", "athena", "athAsset", "social_share", "content_source"
+	"_trksid", "athena", "athAsset", "social_share", "content_source", "ref_domain"
 ];
