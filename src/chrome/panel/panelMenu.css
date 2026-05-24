@@ -3,3 +3,7 @@ body,
 .mainContainer {
 	border-radius: 8px;
 }
+
+#eraserParamsToRemoveList.chrome-textarea {
+	font-size: 95%;
+}
