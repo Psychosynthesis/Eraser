@@ -23,7 +23,7 @@
 
  In the current session, you will be able to install unsigned extensions until you restart firefox.
 
- For build extensions run `bash build.sh` from the main directory of this repository. Or just manually pack the files in the directory corresponding to the browser into a zip archive (for Firefox you need to change its extension to `.xpi`).
+ For build extensions run `bash build.sh` from the main directory of this repository. Or just manually copy shared libs in a both browser dirs and pack the files in the directory corresponding to the browser into a zip archive (for Firefox you need to change its extension to `.xpi`).
 
 Shared constants and settings helpers live in `src/shared/constants.js`, `src/shared/settings.js`, and `src/shared/settingsUtils.js`. During `bash build.sh`, they are copied into each browser package as `common/constants.js`, `common/settings.js`, and `common/settingsUtils.js` before zipping and removed again after the archives are created, so generated browser-local copies should not be committed. For unpacked debugging from `src/chrome` or `src/firefox`, run `bash build.sh --keep-shared` first to leave those temporary copies in place.
 
@@ -35,7 +35,7 @@ Available on addons.mozilla.org: https://addons.mozilla.org/ru/firefox/addon/utm
 ---
 
 ### Chrome / Chromium installation
-Available on Chrome Store: https://chrome.google.com/webstore/detail/utm-eraser
+Available on Chrome Store: https://chromewebstore.google.com/detail/utm-eraser/cepijkcnhhbjgiofhdhbomcgdmfjbbhb
 
 For debug extension on Chrome do next steps:  
  1. Run `bash build.sh --keep-shared` from the repository root
