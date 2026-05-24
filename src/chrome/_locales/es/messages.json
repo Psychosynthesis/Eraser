@@ -1,34 +1,34 @@
 {
   "manifestDesc": {
-    "message": "Clean tracking query parameters from URLs, such as utm, fbclid, gclid, etc",
+    "message": "Limpia los parámetros de seguimiento de las URLs, como utm, fbclid, gclid, etc",
     "description": "Short extension description for manifest file"
   },
   "CANT_FIND_SETTINGS_MSG": {
-    "message": "Can't find the UTMeraser settings. Setup new.",
+    "message": "No se encontraron los ajustes de UTMeraser. Configurando nuevos ajustes.",
     "description": "Console message for logging new settings setup"
   },
   "popupSwitchOff": {
-    "message": "Off",
+    "message": "No",
     "description": "Disabled state label in popup switch"
   },
   "popupSwitchOn": {
-    "message": "On",
+    "message": "Sí",
     "description": "Enabled state label in popup switch"
   },
   "popupScopeAll": {
-    "message": "All",
+    "message": "Todos",
     "description": "Global scope label in popup switch"
   },
   "popupScopeSite": {
-    "message": "Site",
+    "message": "Sitio",
     "description": "Current site scope label in popup switch"
   },
   "popupOnlyForDomain": {
-    "message": "Only for this domain",
+    "message": "Solo para este dominio",
     "description": "Domain scope title when no hostname is available"
   },
   "popupOnlyForDomainHost": {
-    "message": "Only for $HOST$",
+    "message": "Solo para $HOST$",
     "description": "Domain scope title with current hostname",
     "placeholders": {
       "host": {
@@ -38,11 +38,11 @@
     }
   },
   "popupParamsForAll": {
-    "message": "UTM's to remove for all sites (separated by ,)",
+    "message": "Parámetros UTM para eliminar en todos los sitios (separados por ,)",
     "description": "Parameter list label for global scope"
   },
   "popupParamsForDomain": {
-    "message": "UTM's to remove for $HOST$ (separated by ,)",
+    "message": "Parámetros UTM para eliminar en $HOST$ (separados por ,)",
     "description": "Parameter list label for current hostname scope",
     "placeholders": {
       "host": {
@@ -52,7 +52,7 @@
     }
   },
   "popupSaveButton": {
-    "message": "Save",
+    "message": "Guardar",
     "description": "Save button label in popup"
   }
 }

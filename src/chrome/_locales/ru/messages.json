@@ -1,10 +1,58 @@
 {
-  "manifestDesc" : {
+  "manifestDesc": {
     "message": "Очистка отслеживающих URL-параметров, таких как utm, fbclid, gclid, etc",
     "description": "Short extension description for manifest file"
   },
   "CANT_FIND_SETTINGS_MSG": {
     "message": "Настройки UTMeraser не найдены. Записываем новые.",
-    "description": "Console message for logging new settings setup (это сообщение видно лишь в консоли)"
+    "description": "Console message for logging new settings setup"
+  },
+  "popupSwitchOff": {
+    "message": "Выкл",
+    "description": "Disabled state label in popup switch"
+  },
+  "popupSwitchOn": {
+    "message": "Вкл",
+    "description": "Enabled state label in popup switch"
+  },
+  "popupScopeAll": {
+    "message": "Все",
+    "description": "Global scope label in popup switch"
+  },
+  "popupScopeSite": {
+    "message": "Сайт",
+    "description": "Current site scope label in popup switch"
+  },
+  "popupOnlyForDomain": {
+    "message": "Только для этого домена",
+    "description": "Domain scope title when no hostname is available"
+  },
+  "popupOnlyForDomainHost": {
+    "message": "Только для $HOST$",
+    "description": "Domain scope title with current hostname",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "popupParamsForAll": {
+    "message": "UTM-метки для удаления на всех сайтах (разделите запятыми)",
+    "description": "Parameter list label for global scope"
+  },
+  "popupParamsForDomain": {
+    "message": "UTM-метки для удаления на $HOST$ (через разделите запятыми)",
+    "description": "Parameter list label for current hostname scope",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "popupSaveButton": {
+    "message": "Сохранить",
+    "description": "Save button label in popup"
   }
 }

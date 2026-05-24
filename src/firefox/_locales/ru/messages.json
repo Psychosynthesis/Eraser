@@ -1,34 +1,34 @@
 {
   "manifestDesc": {
-    "message": "Clean tracking query parameters from URLs, such as utm, fbclid, gclid, etc",
+    "message": "Очистка отслеживающих URL-параметров, таких как utm, fbclid, gclid, etc",
     "description": "Short extension description for manifest file"
   },
   "CANT_FIND_SETTINGS_MSG": {
-    "message": "Can't find the UTMeraser settings. Setup new.",
+    "message": "Настройки UTMeraser не найдены. Записываем новые.",
     "description": "Console message for logging new settings setup"
   },
   "popupSwitchOff": {
-    "message": "Off",
+    "message": "Выкл",
     "description": "Disabled state label in popup switch"
   },
   "popupSwitchOn": {
-    "message": "On",
+    "message": "Вкл",
     "description": "Enabled state label in popup switch"
   },
   "popupScopeAll": {
-    "message": "All",
+    "message": "Все",
     "description": "Global scope label in popup switch"
   },
   "popupScopeSite": {
-    "message": "Site",
+    "message": "Сайт",
     "description": "Current site scope label in popup switch"
   },
   "popupOnlyForDomain": {
-    "message": "Only for this domain",
+    "message": "Только для этого домена",
     "description": "Domain scope title when no hostname is available"
   },
   "popupOnlyForDomainHost": {
-    "message": "Only for $HOST$",
+    "message": "Только для $HOST$",
     "description": "Domain scope title with current hostname",
     "placeholders": {
       "host": {
@@ -38,11 +38,11 @@
     }
   },
   "popupParamsForAll": {
-    "message": "UTM's to remove for all sites (separated by ,)",
+    "message": "UTM-метки для удаления на всех сайтах (через ,)",
     "description": "Parameter list label for global scope"
   },
   "popupParamsForDomain": {
-    "message": "UTM's to remove for $HOST$ (separated by ,)",
+    "message": "UTM-метки для удаления на $HOST$ (через ,)",
     "description": "Parameter list label for current hostname scope",
     "placeholders": {
       "host": {
@@ -52,7 +52,7 @@
     }
   },
   "popupSaveButton": {
-    "message": "Save",
+    "message": "Сохранить",
     "description": "Save button label in popup"
   }
 }

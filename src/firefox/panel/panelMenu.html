@@ -2,6 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<link rel="stylesheet" href="sharedPanel.css"/>
 	<link rel="stylesheet" href="panelMenu.css"/>
 </head>
 <body>
@@ -9,24 +10,24 @@
 		<div class="mainHeader">UTM Eraser</div>
 		<div class="eraserCustomRadio-container">
 			<div class="eraserCustomRadio" id="eraserCustomRadioItem">
-				<div class="eraserCustomRadio-off-title">Off</div>
+				<div class="eraserCustomRadio-off-title" data-i18n="popupSwitchOff">Off</div>
 				<div class="eraserCustomRadio-state-marker no-select"><div class="eraserCustomRadio-punkt">&nbsp;</div></div>
-				<div class="eraserCustomRadio-on-title">On</div>
+				<div class="eraserCustomRadio-on-title" data-i18n="popupSwitchOn">On</div>
 			</div>
 		</div>
 		<hr />
 		<div class="params-container">
 			<div class="domain-scope-switch-container">
-				<div class="domain-scope-title" id="eraserOnlyForDomainLabel">Only for this domain</div>
+				<div class="domain-scope-title" id="eraserOnlyForDomainLabel" data-i18n="popupOnlyForDomain">Only for this domain</div>
 				<div class="eraserCustomRadio" id="eraserDomainScopeSwitch">
-					<div class="eraserCustomRadio-off-title">All</div>
+					<div class="eraserCustomRadio-off-title" data-i18n="popupScopeAll">All</div>
 					<div class="eraserCustomRadio-state-marker no-select"><div class="eraserCustomRadio-punkt">&nbsp;</div></div>
-					<div class="eraserCustomRadio-on-title">Site</div>
+					<div class="eraserCustomRadio-on-title" data-i18n="popupScopeSite">Site</div>
 				</div>
 			</div>
-			<label id="eraserParamsScopeLabel">UTM's to remove (separated by ,)</label> <br /><br />
+			<label id="eraserParamsScopeLabel" data-i18n="popupParamsForAll">UTM's to remove for all sites (separated by ,)</label>
 			<textarea id="eraserParamsToRemoveList"></textarea>
-			<button id="eraserSaveParamsBtn">Save</button>
+			<button id="eraserSaveParamsBtn" data-i18n="popupSaveButton">Save</button>
 		</div>
 	</div>
 	<script src="panelMenu.js" type="module"></script>

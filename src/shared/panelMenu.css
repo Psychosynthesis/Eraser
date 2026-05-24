@@ -1,0 +1,162 @@
+html,
+body {
+	margin: 0;
+	background: transparent;
+	overflow: hidden;
+}
+
+body {
+	font-family: Arial, sans-serif;
+}
+
+.mainContainer {
+	background: #555;
+	color: #eee;
+	padding: 10px;
+	min-width: 180px;
+	max-width: 240px;
+	margin: 0 auto;
+	text-align: center;
+	border: 1px solid #8a8a8a;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+.mainHeader {
+	margin: 0;
+	font-weight: bold;
+	font-size: 115%;
+	text-align: center;
+}
+
+.eraserCustomRadio-container {
+	margin: 20px auto;
+	text-align: center;
+}
+
+.eraserCustomRadio-container,
+.eraserCustomRadio-container div {
+	display: inline-flex;
+	align-items: center;
+}
+
+.eraserCustomRadio {
+	margin-left: 5px;
+	font-size: 95%;
+	position: relative;
+}
+
+.eraserCustomRadio .eraserCustomRadio-state-marker {
+	width: 40px;
+	height: 20px;
+	position: relative;
+	top: 2px;
+	line-height: 20px;
+	margin: 0 10px;
+	border-radius: 10px;
+	cursor: pointer;
+	background-color: #c8c8c8;
+}
+
+.eraserCustomRadio .eraserCustomRadio-punkt {
+	width: 20px;
+	height: 20px;
+	position: absolute;
+	left: 0;
+	border-radius: 10px;
+	box-sizing: border-box;
+	-webkit-transition: left 0.1s;
+	-moz-transition: left 0.1s;
+	-o-transition: left 0.1s;
+	-ms-transition: left 0.1s;
+	transition: left 0.1s;
+	background-color: #fff;
+	border: 1px solid #000;
+}
+
+.eraserCustomRadio.checked .eraserCustomRadio-punkt {
+	left: 20px;
+}
+
+.eraserCustomRadio.checked .eraserCustomRadio-state-marker {
+	background-color: #139ecc;
+}
+
+.no-select {
+	-ms-user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.params-container {
+	text-align: center;
+}
+
+.domain-scope-switch-container {
+	margin: 8px 0 12px;
+	text-align: center;
+}
+
+.domain-scope-title {
+	margin-bottom: 6px;
+	font-size: 90%;
+}
+
+.domain-scope-switch-container .eraserCustomRadio {
+	display: inline-flex;
+	align-items: center;
+	margin-left: 0;
+}
+
+.domain-scope-switch-container.disabled {
+	opacity: 0.55;
+}
+
+.domain-scope-switch-container.disabled .eraserCustomRadio-state-marker {
+	cursor: default;
+}
+
+#eraserParamsScopeLabel {
+	display: block;
+	font-size: 90%;
+	text-align: center;
+}
+
+#eraserParamsToRemoveList {
+	width: 100%;
+	min-height: 100px;
+	margin: 0;
+	padding: 6px;
+	resize: vertical;
+	background: #222;
+	color: #fff;
+	font-size: 90%;
+	border: 1px solid #8a8a8a;
+	border-radius: 6px;
+	box-sizing: border-box;
+	outline: none;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+#eraserParamsToRemoveList:focus {
+	border-color: #139ecc;
+}
+
+#eraserParamsToRemoveList::-webkit-scrollbar {
+	display: none;
+}
+
+#eraserSaveParamsBtn {
+	display: block;
+	width: 100%;
+	margin-top: 5px;
+	padding: 5px;
+	border-radius: 5px;
+	background: #139ecc;
+	color: white;
+	border: none;
+	cursor: pointer;
+	text-align: center;
+}

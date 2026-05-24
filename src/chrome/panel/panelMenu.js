@@ -19,6 +19,21 @@ let globalParamsDraft = [];
 let domainParamsDraft = [];
 let domainParamsSaved = false;
 
+const i18n = globalThis.browser?.i18n || globalThis.chrome?.i18n;
+
+function getMessage(messageName, substitutions = [], fallback = '') {
+	const message = i18n?.getMessage(messageName, substitutions);
+
+	return message || fallback;
+}
+
+function translateStaticText() {
+	document.querySelectorAll('[data-i18n]').forEach((element) => {
+		const messageName = element.dataset.i18n;
+		element.textContent = getMessage(messageName, [], element.textContent);
+	});
+}
+
 function setSwitchControl(element, status) {
 	element.className = status ? "eraserCustomRadio checked" : "eraserCustomRadio";
 }
@@ -58,11 +73,11 @@ function updateScopeLabel() {
 
 	container.classList.toggle('disabled', !currentHostname);
 	label.textContent = currentHostname ?
-		`Only for ${currentHostname}` :
-		"Only for this domain";
+		getMessage('popupOnlyForDomainHost', [currentHostname], `Only for ${currentHostname}`) :
+		getMessage('popupOnlyForDomain', [], "Only for this domain");
 	scopeLabel.textContent = activeOnlyForDomain && currentHostname ?
-		`UTM's to remove for ${currentHostname} (separated by ,)` :
-		"UTM's to remove for all sites (separated by ,)";
+		getMessage('popupParamsForDomain', [currentHostname], `UTM's to remove for ${currentHostname} (separated by ,)`) :
+		getMessage('popupParamsForAll', [], "UTM's to remove for all sites (separated by ,)");
 }
 
 function renderActiveScope() {
@@ -179,6 +194,7 @@ function saveSettings() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+	translateStaticText();
 	readCurrentHostname((hostname) => {
 		currentHostname = hostname;
 		readUTMeraserSettings(onLoad);

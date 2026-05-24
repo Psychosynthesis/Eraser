@@ -12,6 +12,9 @@
 
   Users can edit this full list in the popup or save a separate full list for the current domain.
 
+### Architecture notes
+  Browser packages are kept in separate `src/chrome` and `src/firefox` directories, while shared defaults and settings normalization live in `src/shared/constants.js` and `src/shared/settings.js`. Browser-specific `common/utils.js` files are limited to storage/API glue; filtering and settings logic stays in `common/settings.js` after the shared files are copied during build. Chrome uses Manifest V3 with dynamic `declarativeNetRequest` rules, while Firefox uses Manifest V2 with `webRequestBlocking`.
+
 ---
 
 ### Debugging
@@ -25,7 +28,7 @@
 
  For build extensions run `bash build.sh` from the main directory of this repository. Or just manually copy shared libs in a both browser dirs and pack the files in the directory corresponding to the browser into a zip archive (for Firefox you need to change its extension to `.xpi`).
 
-Shared constants and settings helpers live in `src/shared/constants.js`, `src/shared/settings.js`, and `src/shared/settingsUtils.js`. During `bash build.sh`, they are copied into each browser package as `common/constants.js`, `common/settings.js`, and `common/settingsUtils.js` before zipping and removed again after the archives are created, so generated browser-local copies should not be committed. For unpacked debugging from `src/chrome` or `src/firefox`, run `bash build.sh --keep-shared` first to leave those temporary copies in place.
+Shared constants, settings helpers, and common popup styles live in `src/shared/constants.js`, `src/shared/settings.js`, and `src/shared/panelMenu.css`. During `bash build.sh`, they are copied into each browser package as `common/constants.js`, `common/settings.js`, and `panel/sharedPanel.css` before zipping and removed again after the archives are created, so generated browser-local copies should not be committed. For unpacked debugging from `src/chrome` or `src/firefox`, run `bash build.sh --keep-shared` first to leave those temporary copies in place.
 
 ---
 
@@ -61,4 +64,3 @@ Old versions of Firefox (for old OS) doesn't allow you to work properly with the
 
 ### TODO
  - Check Firefox Mobile Extensions API for compatibility
- - Check is re-export of `normalizeUTMeraserSettings` from `sharedUtils` is necessary. It looks like some kind of artifact, but I've already forgotten why I did it...
