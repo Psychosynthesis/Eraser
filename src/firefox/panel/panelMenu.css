@@ -2,3 +2,97 @@
 #eraserSaveParamsBtn {
 	text-align: center;
 }
+
+html.firefox-android,
+html.firefox-android body {
+	width: 100vw;
+	min-width: 320px;
+	min-height: 100vh;
+	overflow: auto;
+	background: #555;
+}
+
+html.firefox-android body {
+	font-family: Roboto, Arial, sans-serif;
+}
+
+html.firefox-android .mainContainer {
+	width: 100vw;
+	max-width: none;
+	min-width: 320px;
+	min-height: 100vh;
+	margin: 0;
+	padding: 16px;
+	border: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+html.firefox-android .mainHeader {
+	font-size: 20px;
+}
+
+html.firefox-android .eraserCustomRadio-container {
+	margin: 8px auto;
+}
+
+html.firefox-android .eraserCustomRadio {
+	font-size: 16px;
+}
+
+html.firefox-android .eraserCustomRadio .eraserCustomRadio-state-marker {
+	width: 56px;
+	height: 28px;
+	line-height: 28px;
+	border-radius: 14px;
+}
+
+html.firefox-android .eraserCustomRadio .eraserCustomRadio-punkt {
+	width: 28px;
+	height: 28px;
+	border-radius: 14px;
+}
+
+html.firefox-android .eraserCustomRadio.checked .eraserCustomRadio-punkt {
+	left: 28px;
+}
+
+html.firefox-android .params-container {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 12px;
+}
+
+html.firefox-android .domain-scope-switch-container {
+	margin: 0;
+}
+
+html.firefox-android .domain-scope-title,
+html.firefox-android #eraserParamsScopeLabel {
+	font-size: 15px;
+	line-height: 1.35;
+}
+
+html.firefox-android #eraserParamsToRemoveList {
+	flex: 1;
+	min-height: 180px;
+	padding: 10px;
+	font-size: 16px;
+	line-height: 1.35;
+}
+
+html.firefox-android #eraserSaveParamsBtn {
+	min-height: 44px;
+	margin-top: 0;
+	font-size: 16px;
+}
+
+@media (min-width: 480px) {
+	html.firefox-android .mainContainer {
+		max-width: 520px;
+		min-height: auto;
+		margin: 0 auto;
+	}
+}

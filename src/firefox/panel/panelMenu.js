@@ -19,6 +19,9 @@ let globalParamsDraft = [];
 let domainParamsDraft = [];
 let domainParamsSaved = false;
 
+const isFirefoxAndroid = /Android/i.test(navigator.userAgent);
+document.documentElement.classList.toggle('firefox-android', isFirefoxAndroid);
+
 const i18n = globalThis.browser?.i18n || globalThis.chrome?.i18n;
 
 function getMessage(messageName, substitutions = [], fallback = '') {
